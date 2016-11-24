@@ -1,6 +1,7 @@
 package ru.edustor.gen.util
 
 import com.itextpdf.kernel.geom.Rectangle
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas
 
 fun getGridBorders(pageSize: Rectangle,
                    gridSquareSide: Float,
@@ -27,4 +28,21 @@ private fun calculateMinMaxPoints(maxLength: Float, step: Float,
     val e = (max - min) % step
 
     return min to max
+}
+
+fun PdfCanvas.drawGrid(borders: Rectangle, gridSquareSide: Int) {
+    val xLines = (borders.left.toInt()..borders.right.toInt() step gridSquareSide).map { it + borders.left.mod(1) }
+    val yLines = (borders.bottom.toInt()..borders.top.toInt() step gridSquareSide).map { it + borders.top.mod(1) }
+
+    for (x in xLines) {
+        this.moveTo(x.toDouble(), borders.top.toDouble())
+                .lineTo(x.toDouble(), borders.bottom.toDouble())
+                .stroke()
+    }
+
+    for (y in yLines) {
+        this.moveTo(borders.left.toDouble(),y.toDouble())
+                .lineTo(borders.right.toDouble(), y.toDouble())
+                .stroke()
+    }
 }
