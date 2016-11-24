@@ -50,7 +50,7 @@ task createProperties(dependsOn: processResources) {
     doLast {
         new File("$buildDir/resources/main/build.properties").withWriter { w ->
             def p = new Properties()
-            p['version'] = "${project.version}.$commitId".toString()
+            p['version'] = "${project.version}-$commitId".toString()
             p['date'] = Instant.now().toString()
             p['commitId'] = commitId
             p.store(w, null)
