@@ -1,6 +1,11 @@
 package ru.edustor.gen
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.annotation.PropertySource
 
 @SpringBootApplication
-open class EdustorGenApplication
+@PropertySource("classpath:build.properties")
+open class EdustorGenApplication(
+        @Value("\${version}") val version: String
+)
