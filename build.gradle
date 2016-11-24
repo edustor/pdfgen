@@ -1,3 +1,5 @@
+import org.ajoberstar.grgit.Grgit
+
 import java.time.Instant
 
 buildscript {
@@ -9,6 +11,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+        classpath 'org.ajoberstar:gradle-git:1.6.0'
     }
 }
 
@@ -37,13 +40,19 @@ jar {
     archiveName = "edustor-gen.jar"
 }
 
+ext {
+    def grgit = Grgit.open()
+    commitId = grgit.head().getAbbreviatedId()
+}
+
 
 task createProperties(dependsOn: processResources) {
     doLast {
         new File("$buildDir/resources/main/build.properties").withWriter { w ->
-            Properties p = new Properties()
-            p['version'] = project.version.toString()
+            def p = new Properties()
+            p['version'] = "${project.version}.$commitId".toString()
             p['date'] = Instant.now().toString()
+            p['commitId'] = commitId
             p.store(w, null)
         }
     }
