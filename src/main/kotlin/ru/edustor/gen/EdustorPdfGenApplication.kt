@@ -6,6 +6,6 @@ import org.springframework.context.annotation.PropertySource
 
 @SpringBootApplication
 @PropertySource("classpath:build.properties")
-open class EdustorGenApplication(
+open class EdustorPdfGenApplication(
         @Value("\${version}") val version: String
 )
