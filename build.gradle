@@ -41,4 +41,5 @@ dependencies {
     compile 'com.itextpdf:kernel:7.0.1'
     compile 'com.itextpdf:io:7.0.1'
     compile 'com.itextpdf:layout:7.0.1'
+    compile 'com.google.zxing:javase:3.3.0'
 }
