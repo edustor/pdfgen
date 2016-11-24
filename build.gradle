@@ -1,3 +1,5 @@
+import java.time.Instant
+
 buildscript {
     ext.kotlin_version = '1.0.5-2'
     ext.spring_boot_version = '1.4.1.RELEASE'
@@ -15,7 +17,7 @@ apply plugin: 'spring-boot'
 apply plugin: 'idea'
 
 group 'ru.edustor'
-version '0.5.0.5-SNAPSHOT'
+version '0.5'
 
 repositories {
     mavenCentral()
@@ -34,6 +36,20 @@ jar {
     destinationDir = new File(buildDir, "/dist")
     archiveName = "edustor-gen.jar"
 }
+
+
+task createProperties(dependsOn: processResources) {
+    doLast {
+        new File("$buildDir/resources/main/build.properties").withWriter { w ->
+            Properties p = new Properties()
+            p['version'] = project.version.toString()
+            p['date'] = Instant.now().toString()
+            p.store(w, null)
+        }
+    }
+}
+
+processResources.finalizedBy createProperties
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
