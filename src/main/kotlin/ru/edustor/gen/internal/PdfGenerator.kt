@@ -9,7 +9,6 @@ import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas
 import com.itextpdf.kernel.pdf.canvas.PdfCanvasConstants
-import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Component
 import ru.edustor.gen.EdustorGenApplication
 import ru.edustor.gen.util.EdustorPageId
@@ -29,16 +28,16 @@ open class PdfGenerator(val edustorGenApplication: EdustorGenApplication) {
         val fontBytes = this.javaClass.getResource("/fonts/Proxima Nova Thin.ttf").readBytes()
         val proximaNovaFont = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H, true, true)
 
-        val LR_MARGIN = 15f
-        val TOP_MARGIN = 15f
-        val BOTTOM_MARGIN = 15f
+        val LR_MARGIN = 17.5f
+        val TOP_MARGIN = 11f
+        val BOTTOM_MARGIN = 14f
 
         val ps = PageSize.A4
 
         val effectiveArea = ps.clone().applyMargins<Rectangle>(TOP_MARGIN, LR_MARGIN, BOTTOM_MARGIN, LR_MARGIN, false)
 
         val gridSquareSide = 14
-        val allowedGridArea = effectiveArea.clone().applyMargins<Rectangle>(3f, 0f, 8f, 0f, false)
+        val allowedGridArea = effectiveArea.clone().applyMargins<Rectangle>(11f, 0f, 8f, 0f, false)
         val effectiveGridArea = getGridBorders(allowedGridArea, gridSquareSide.toFloat())
 
         val now = LocalDateTime.now(ZoneId.of("Europe/Moscow")).withNano(0)
