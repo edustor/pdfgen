@@ -3,29 +3,22 @@ package ru.edustor.gen.util
 import com.itextpdf.kernel.geom.Rectangle
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas
 
-fun getGridBorders(pageSize: Rectangle,
-                   gridSquareSide: Float,
-                   borderTop: Float,
-                   borderBottom: Float,
-                   borderLR: Float
+fun getGridBorders(allowedArea: Rectangle,
+                   gridSquareSide: Float
 ): Rectangle {
-    val (xMin, xMax) = calculateMinMaxPoints(pageSize.width, gridSquareSide, borderLR, borderLR)
-    val (yMin, yMax) = calculateMinMaxPoints(pageSize.height, gridSquareSide, borderTop, borderBottom)
+    val xm = calculateAdditionalMargin(allowedArea.width, gridSquareSide)
+    val ym = calculateAdditionalMargin(allowedArea.height, gridSquareSide)
 
-    return Rectangle(pageSize.x + xMin, pageSize.y + yMin, pageSize.x + xMax - xMin, pageSize.y + yMax - yMin)
+    val result = allowedArea.clone().applyMargins<Rectangle>(ym, xm, ym, xm, false)
+    return result
 }
 
-private fun calculateMinMaxPoints(maxLength: Float, step: Float,
-                                  marginStart: Float, marginEnd: Float): Pair<Float, Float> {
-    val allowedLength = maxLength - (marginStart + marginEnd)
-    val maxRoundLength = allowedLength - (allowedLength % step)
+private fun calculateAdditionalMargin(maxLength: Float, step: Float): Float {
+    val maxRoundLength = maxLength - (maxLength % step)
 
-    val additionalMargin = (allowedLength - maxRoundLength) / 2
+    val additionalMargin = (maxLength - maxRoundLength) / 2
 
-    val min = marginStart + additionalMargin
-    val max = maxLength - (marginEnd + additionalMargin)
-
-    return min to max
+    return additionalMargin
 }
 
 fun PdfCanvas.drawGrid(borders: Rectangle, gridSquareSide: Int) {
@@ -39,7 +32,7 @@ fun PdfCanvas.drawGrid(borders: Rectangle, gridSquareSide: Int) {
     }
 
     for (y in yLines) {
-        this.moveTo(borders.left.toDouble(),y.toDouble())
+        this.moveTo(borders.left.toDouble(), y.toDouble())
                 .lineTo(borders.right.toDouble(), y.toDouble())
                 .stroke()
     }
