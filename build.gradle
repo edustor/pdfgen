@@ -38,5 +38,5 @@ jar {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.springframework.boot:spring-boot-starter-web"
-    compile 'com.itextpdf:itextpdf:5.5.10'
+    compile 'com.itextpdf:layout:7.0.1'
 }
