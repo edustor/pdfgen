@@ -18,18 +18,20 @@ open class PdfGenerator {
         val pdfDocument = PdfDocument(pdfWriter)
 
         val ps = PageSize.A4
-        val page = pdfDocument.addNewPage(ps)
-        val canvas = PdfCanvas(page)
-                .setLineWidth(0.1f)
-                .setColor(Color.GRAY, false)
-                .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
-        val gridSquareSide = 15
+        val gridSquareSide = 14
         val borders = getGridBorders(ps, gridSquareSide.toFloat(), 15f, 15f, 15f)
-        canvas.drawGrid(borders, gridSquareSide)
 
+        for (i in 1..pageCount) {
+            val page = pdfDocument.addNewPage(ps)
+            val canvas = PdfCanvas(page)
+                    .setLineWidth(0.1f)
+                    .setColor(Color.GRAY, false)
+                    .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
+
+            canvas.drawGrid(borders, gridSquareSide)
+        }
 //        canvas.concatMatrix(1.0, 0.0, 0.0, 1.0, 0.0, ps.height.toDouble())
-
         pdfDocument.close()
     }
 }

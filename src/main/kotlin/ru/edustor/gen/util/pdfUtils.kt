@@ -25,8 +25,6 @@ private fun calculateMinMaxPoints(maxLength: Float, step: Float,
     val min = marginStart + additionalMargin
     val max = maxLength - (marginEnd + additionalMargin)
 
-    val e = (max - min) % step
-
     return min to max
 }
 

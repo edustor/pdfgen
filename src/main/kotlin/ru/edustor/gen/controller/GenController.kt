@@ -9,6 +9,6 @@ import java.io.OutputStream
 class GenController(val pdfGenerator: PdfGenerator) {
     @RequestMapping("/")
     fun root(outStream: OutputStream) {
-        pdfGenerator.makePdf(outStream, 1)
+        pdfGenerator.makePdf(outStream, 10)
     }
 }
