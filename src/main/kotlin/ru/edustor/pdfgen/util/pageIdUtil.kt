@@ -1,4 +1,4 @@
-package ru.edustor.gen.util
+package ru.edustor.pdfgen.util
 
 import java.util.*
 

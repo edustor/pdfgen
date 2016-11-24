@@ -1,4 +1,4 @@
-package ru.edustor.gen.util
+package ru.edustor.pdfgen.util
 
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType

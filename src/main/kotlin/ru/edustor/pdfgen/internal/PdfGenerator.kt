@@ -1,4 +1,4 @@
-package ru.edustor.gen.internal
+package ru.edustor.pdfgen.internal
 
 import com.itextpdf.io.font.PdfEncodings
 import com.itextpdf.io.image.ImageDataFactory
@@ -11,8 +11,8 @@ import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas
 import com.itextpdf.kernel.pdf.canvas.PdfCanvasConstants
 import org.springframework.stereotype.Component
-import ru.edustor.gen.EdustorPdfGenApplication
-import ru.edustor.gen.util.*
+import ru.edustor.pdfgen.EdustorPdfGenApplication
+import ru.edustor.pdfgen.util.*
 import java.io.OutputStream
 import java.time.LocalDateTime
 import java.time.ZoneId

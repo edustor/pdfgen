@@ -1,4 +1,4 @@
-package ru.edustor.gen.util
+package ru.edustor.pdfgen.util
 
 import com.itextpdf.kernel.geom.Rectangle
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas

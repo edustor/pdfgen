@@ -1,4 +1,4 @@
-package ru.edustor.gen
+package ru.edustor.pdfgen
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
