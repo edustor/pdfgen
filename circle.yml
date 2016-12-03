@@ -44,16 +44,11 @@ deployment:
   production:
     branch: master
     commands:
-      - docker build --rm=false -t edustor/pdfgen -f Dockerfile.ci .
-      - docker history edustor/pdfgen
-      - docker push edustor/pdfgen:latest | cat
-      - docker run
-        -e "RANCHER_URL=https://rancher.wutiarn.ru/v1/projects/1a5"
-        -e "RANCHER_STACK_NAME=edustor"
-        -e "RANCHER_SERVICE_NAME=edustor-pdfgen"
-        -e "RANCHER_STACK_ID=$RANCHER_STACK_ID"
-        -e "RANCHER_ACCESS_KEY=$RANCHER_ACCESS_KEY"
-        -e "RANCHER_SECRET_KEY=$RANCHER_SECRET_KEY"
-        wutiarn/rancher-deployer
+      - docker build --rm=false -t edustor/pdfgen:$CIRCLE_BUILD_NUM -f Dockerfile.ci .
+      - docker history edustor/pdfgen:$CIRCLE_BUILD_NUM
+      - docker push edustor/pdfgen:$CIRCLE_BUILD_NUM | cat
+      - docker run quay.io/wutiarn/kubectl
+        kubectl --server https://k8s.wutiarn.ru --token $K8S_TOKEN
+        set image -n edustor deployment/pdfgen pdfgen="edustor/pdfgen:$CIRCLE_BUILD_NUM"
 # REQUIRED ENVIRONMENTS
-# DOCKER_HUB_PASSWORD RANCHER_STACK_ID RANCHER_ACCESS_KEY RANCHER_SECRET_KEY GITHUB_TOKEN
+# DOCKER_HUB_PASSWORD K8S_TOKEN GITHUB_TOKEN
