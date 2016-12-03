@@ -9,10 +9,10 @@ dependencies:
   override:
     - ./gradlew resolveConfigurations
   post:
+    - docker login -u wutiarn+circleci_cache -e me@wutiarn.ru -p $QUAY_CACHE_PASSWORD quay.io
     - ./ci-base/ci-base.sh Dockerfile.ci
 test:
   override:
-    - docker login -u wutiarn+circleci_cache -e me@wutiarn.ru -p $QUAY_CACHE_PASSWORD quay.io
     - docker run wutiarn/ci-base-cache:test echo "$HOME"
     - docker run
       -w $PWD -v $PWD:$PWD
