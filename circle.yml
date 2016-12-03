@@ -5,8 +5,6 @@ machine:
     - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
   services:
     - docker
-  post:
-    - docker login -u wutiarn -e me@wutiarn.ru -p $QUAY_PASSWORD quay.io
 dependencies:
   override:
     - ./gradlew resolveConfigurations
@@ -14,6 +12,7 @@ dependencies:
     - ./ci-base/ci-base.sh Dockerfile.ci
 test:
   override:
+    - docker login -u wutiarn+circleci_cache -e me@wutiarn.ru -p $QUAY_CACHE_PASSWORD quay.io
     - docker run wutiarn/ci-base-cache:test echo "$HOME"
     - docker run
       -w $PWD -v $PWD:$PWD
@@ -44,6 +43,7 @@ deployment:
   production:
     branch: master
     commands:
+      - docker login -u edustor+circleci -e me@wutiarn.ru -p $QUAY_EDUSTOR_PASSWORD quay.io
       - docker build --rm=false -t result -f Dockerfile.ci .
       - docker history result
       - docker tag result quay.io/edustor/pdfgen:ci-$CIRCLE_BUILD_NUM
@@ -54,4 +54,4 @@ deployment:
         kubectl --server https://k8s.wutiarn.ru --token $K8S_TOKEN
         set image -n edustor deployment/pdfgen pdfgen="quay.io/edustor/pdfgen:ci-$CIRCLE_BUILD_NUM"
 # REQUIRED ENVIRONMENTS
-# $DOCKER_REGISTRY_PASSWORD K8S_TOKEN GITHUB_TOKEN
+# QUAY_CACHE_PASSWORD QUAY_EDUSTOR_PASSWORD K8S_TOKEN GITHUB_TOKEN
