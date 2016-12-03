@@ -44,11 +44,14 @@ deployment:
   production:
     branch: master
     commands:
-      - docker build --rm=false -t edustor/pdfgen:$CIRCLE_BUILD_NUM -f Dockerfile.ci .
-      - docker history edustor/pdfgen:$CIRCLE_BUILD_NUM
-      - docker push edustor/pdfgen:$CIRCLE_BUILD_NUM | cat
+      - docker build --rm=false -t result -f Dockerfile.ci .
+      - docker history result
+      - docker tag result edustor/pdfgen:ci-$CIRCLE_BUILD_NUM
+      - docker tag result edustor/pdfgen:latest
+      - docker push edustor/pdfgen:ci-$CIRCLE_BUILD_NUM | cat
+      - docker push edustor/pdfgen:latest | cat
       - docker run quay.io/wutiarn/kubectl
         kubectl --server https://k8s.wutiarn.ru --token $K8S_TOKEN
-        set image -n edustor deployment/pdfgen pdfgen="edustor/pdfgen:$CIRCLE_BUILD_NUM"
+        set image -n edustor deployment/pdfgen pdfgen="edustor/pdfgen:ci-$CIRCLE_BUILD_NUM"
 # REQUIRED ENVIRONMENTS
 # DOCKER_HUB_PASSWORD K8S_TOKEN GITHUB_TOKEN
