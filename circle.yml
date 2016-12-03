@@ -6,7 +6,7 @@ machine:
   services:
     - docker
   post:
-    - docker login -u wutiarn -e me@wutiarn.ru -p QUAY_PASSWORD quay.io
+    - docker login -u wutiarn -e me@wutiarn.ru -p $QUAY_PASSWORD quay.io
 dependencies:
   override:
     - ./gradlew resolveConfigurations
