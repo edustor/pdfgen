@@ -5,6 +5,7 @@ import java.time.Instant
 buildscript {
     ext.kotlin_version = '1.0.5-2'
     ext.spring_boot_version = '1.4.1.RELEASE'
+    ext.edustor_commons_version = 'df9337f'
     repositories {
         mavenCentral()
     }
@@ -29,6 +30,7 @@ version '0.5'
 repositories {
     mavenCentral()
     jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 idea {
@@ -46,25 +48,28 @@ jar {
 
 ext {
     def grgit = Grgit.open()
-    commitId = grgit.head().getAbbreviatedId()
+    shortCommitId = grgit.head().getAbbreviatedId()
+    commitId = grgit.head().id
 }
-
 
 task createProperties(dependsOn: processResources) {
     doLast {
         new File("$buildDir/resources/main/build.properties").withWriter { w ->
             def p = new Properties()
-            p['version'] = "${project.version}-$commitId".toString()
-            p['date'] = Instant.now().toString()
-            p['commitId'] = commitId
+            p['edustor.build.name'] = "Edustor PDFGen"
+            p['edustor.build.version'] = "${project.version}-$shortCommitId".toString()
+            p['edustor.build.date'] = Instant.now().epochSecond.toString()
+            p['edustor.build.commitId'] = commitId
+            p['edustor.build.repo'] = "https://github.com/edustor/pdfgen"
             p.store(w, null)
         }
     }
 }
-
 processResources.finalizedBy createProperties
 
 dependencies {
+    compile "ru.edustor.commons:version:$edustor_commons_version"
+
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.springframework.boot:spring-boot-starter-web"
     compile 'com.itextpdf:kernel:7.0.1'
