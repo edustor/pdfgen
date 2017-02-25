@@ -13,7 +13,7 @@ dependencies:
     - ./ci-base/ci-base.sh Dockerfile.ci
 test:
   override:
-    - docker run wutiarn/ci-base-cache:test echo "$HOME"
+    - rm ~/.gradle/caches/*/fileHashes/fileHashes.lock
     - docker run
       -w $PWD -v $PWD:$PWD
       -v $HOME/.gradle/:/root/.gradle/
