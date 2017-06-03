@@ -3,9 +3,8 @@ import org.ajoberstar.grgit.Grgit
 import java.time.Instant
 
 buildscript {
-    ext.kotlin_version = '1.0.6'
+    ext.kotlin_version = '1.1.2-2'
     ext.spring_boot_version = '1.4.1.RELEASE'
-    ext.edustor_commons_version = 'df9337f'
     repositories {
         mavenCentral()
     }
@@ -14,10 +13,6 @@ buildscript {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
         classpath 'org.ajoberstar:gradle-git:1.6.0'
     }
-}
-
-plugins {
-    id "com.palantir.configuration-resolver" version "0.2.0"
 }
 
 apply plugin: 'kotlin'
@@ -29,8 +24,6 @@ version '0.7.2'
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven { url 'https://jitpack.io' }
 }
 
 idea {
@@ -68,7 +61,7 @@ task createProperties(dependsOn: processResources) {
 processResources.finalizedBy createProperties
 
 dependencies {
-    compile "ru.edustor.commons:version:$edustor_commons_version"
+    compile project(':edustor-commons:version')
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.springframework.boot:spring-boot-starter-web"
