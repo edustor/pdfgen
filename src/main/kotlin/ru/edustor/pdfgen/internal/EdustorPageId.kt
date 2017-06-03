@@ -1,11 +1,17 @@
 package ru.edustor.pdfgen.internal
 
-import java.util.*
+class EdustorPageId(val id: String = "1703225501234567") {
+    val humanReadableId = let {
+        val groupsCount = id.length / 4
 
-class EdustorPageId(val uuid: String = UUID.randomUUID().toString()) {
-    private val shortId: String = uuid.split("-").last()
+        var src = id
+        val groups = mutableListOf<String>()
 
-    val humanReadableId = "#${shortId.substring(0, 4)}-${shortId.substring(4, 8)}-${shortId.substring(8, 12)}"
-    val shortHumanReadableId = "#${shortId.substring(8, 12)}"
-    val qrURI = "https://edustor.ru/p/$uuid"
+        while (src.isNotEmpty()) {
+            groups.add(src.take(4))
+            src = src.drop(4)
+        }
+
+        return@let groups.joinToString(" ")
+    }
 }
