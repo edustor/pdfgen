@@ -18,7 +18,8 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Component
-open class PdfGenerator(val versionInfoHolder: EdustorVersionInfoHolder) {
+open class PdfGenerator(val versionInfoHolder: EdustorVersionInfoHolder,
+                        val pageIdGenerator: EdustorPageIdGenerator) {
     fun makePdf(outputStream: OutputStream, pageCount: Int) {
         val pdfWriter = PdfWriter(outputStream)
         val pdfDocument = PdfDocument(pdfWriter)
@@ -36,7 +37,8 @@ open class PdfGenerator(val versionInfoHolder: EdustorVersionInfoHolder) {
         val nowStr = "${now.format(DateTimeFormatter.ISO_LOCAL_DATE)} ${now.format(DateTimeFormatter.ISO_LOCAL_TIME)} MSK"
 
         for (i in 1..pageCount) {
-            val pageId = EdustorPageId()
+            val newPageId = pageIdGenerator.getNewPageId()
+            val pageId = newPageId
 
             val page = pdfDocument.addNewPage(PAGE_SIZE)
             val canvas = PdfCanvas(page)
@@ -48,14 +50,15 @@ open class PdfGenerator(val versionInfoHolder: EdustorVersionInfoHolder) {
             val gridArea = drawGrid(canvas, PAGE_SIZE, CELL_SIDE, 40, 56)
 
 //            Print top row
-            val topIdString = "#________"
             val topRowY = gridArea.top.toDouble() + 3
+            val topStr = "Edustor Alpha"
             canvas.beginText()
                     .setFontAndSize(proximaNovaFont, TOP_FONT_SIZE)
                     .moveText(gridArea.left.toDouble(), topRowY)
-                    .showText("Edustor Alpha")
+                    .showText(topStr)
                     .endText()
 
+            val topIdString = "#__________"
             val topIdStringX = gridArea.right.toDouble() - proximaNovaFont.getWidth(topIdString, TOP_FONT_SIZE)
             canvas.beginText()
                     .moveText(topIdStringX,
@@ -75,10 +78,10 @@ open class PdfGenerator(val versionInfoHolder: EdustorVersionInfoHolder) {
                     .endText()
 
             val pageIdStr = pageId.humanReadableId
-            val bottomStrWidth = proximaNovaFont.getWidth(pageIdStr, BOTTOM_FONT_SIZE)
-            val bottomStrX = gridArea.right.toDouble() - bottomStrWidth - ((6 * CELL_SIDE - bottomStrWidth) / 2)
+            val bottomIdStrWidth = proximaNovaFont.getWidth(pageIdStr, BOTTOM_FONT_SIZE)
+            val bottomIdStrX = gridArea.right.toDouble() - bottomIdStrWidth - ((8 * CELL_SIDE - bottomIdStrWidth) / 2)
             canvas.beginText()
-                    .moveText(bottomStrX,
+                    .moveText(bottomIdStrX,
                             bottomRowY)
                     .showText(pageIdStr)
                     .endText()
@@ -88,8 +91,8 @@ open class PdfGenerator(val versionInfoHolder: EdustorVersionInfoHolder) {
             val qr = makeQR(pageId.id)
             val qrPdfImage = ImageDataFactory.create(qr.getAsByteArray())
 
-            val topBarcodeLocation = Rectangle(topIdStringX.toFloat() - 100f - 5, topRowY.toFloat() - 1, 100f, 10f)
-            val bottomBarcodeLocation = Rectangle(gridArea.right - 6 * CELL_SIDE + 0.1f, gridArea.bottom + 0.1f, 6 * CELL_SIDE - 0.2f, 1 * CELL_SIDE - 0.2f)
+            val topBarcodeLocation = Rectangle(gridArea.left + proximaNovaFont.getWidth(topStr, TOP_FONT_SIZE) + 10f, topRowY.toFloat() - 1, 200f, 10f)
+            val bottomBarcodeLocation = Rectangle(gridArea.right - 8 * CELL_SIDE + 0.1f, gridArea.bottom + 0.1f, 8 * CELL_SIDE - 0.2f, 1 * CELL_SIDE - 0.2f)
             canvas.addImage(qrPdfImage, topBarcodeLocation, true)
             canvas.addImage(qrPdfImage, bottomBarcodeLocation, true)
         }
