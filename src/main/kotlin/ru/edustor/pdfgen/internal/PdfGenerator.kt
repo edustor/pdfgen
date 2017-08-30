@@ -2,6 +2,7 @@ package ru.edustor.pdfgen.internal
 
 import com.itextpdf.io.font.PdfEncodings
 import com.itextpdf.kernel.color.Color
+import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.geom.Rectangle
@@ -19,9 +20,8 @@ import java.time.ZoneId
 open class PdfGenerator {
 
 
-    val fontBytes = this.javaClass.getResource("/fonts/Proxima Nova Thin.ttf").readBytes()
-    val proximaNovaFont = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H, true, true)
-    val PAGE_SIZE = PageSize.A4
+    private val fontBytes = this.javaClass.getResource("/fonts/Proxima Nova Thin.ttf").readBytes()
+    private val PAGE_SIZE = PageSize.A4
 
     fun makePdf(outputStream: OutputStream,
                 authorName: String,
@@ -40,17 +40,55 @@ open class PdfGenerator {
             else -> "${now.year - 1}-${now.year}"
         }
 
+//        Looks like it's necessary to create new PdfFont instance for each document
+        val proximaNovaFont = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H, true, false)
+
+        drawTitlePage(pdfDocument, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear)
+        drawRegularPage(pdfDocument, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear, drawCornell)
+
+        pdfDocument.close()
+    }
+
+    private fun drawTitlePage(pdfDocument: PdfDocument,
+                              proximaNovaFont: PdfFont,
+                              authorName: String,
+                              subjectName: String,
+                              courseName: String,
+                              copyrightString: String,
+                              contactsString: String,
+                              academicYear: String) {
         val page = pdfDocument.addNewPage(PAGE_SIZE)
         val canvas = PdfCanvas(page)
                 .setLineWidth(0.1f)
                 .setStrokeColor(Color.GRAY)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
-        drawRegularPage(canvas, authorName, subjectName, courseName, copyrightString, contactsString, academicYear, drawCornell)
 
-        pdfDocument.close()
+        val edustorStr = "Edustor Digital"
+        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, edustorStr, proximaNovaFont, 18f),
+                PAGE_SIZE.top - 50.0, edustorStr, proximaNovaFont, 18f)
+
+
+        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, courseName, proximaNovaFont, 20f),
+                PAGE_SIZE.top - 365.0, courseName, proximaNovaFont, 20f)
+
+        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, subjectName, proximaNovaFont, 30f),
+                PAGE_SIZE.top - 400.0, subjectName, proximaNovaFont, 30f)
+
+        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, authorName, proximaNovaFont, 18f),
+                PAGE_SIZE.bottom + 270.0, authorName, proximaNovaFont, 18f)
+
+        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, contactsString, proximaNovaFont, 10f),
+                PAGE_SIZE.bottom + 250.0, contactsString, proximaNovaFont, 10f)
+
+        val finalCopyrightString = "© $copyrightString $academicYear"
+        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, finalCopyrightString, proximaNovaFont, 10f),
+                PAGE_SIZE.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
+
+
     }
 
-    private fun drawRegularPage(canvas: PdfCanvas,
+    private fun drawRegularPage(pdfDocument: PdfDocument,
+                                proximaNovaFont: PdfFont,
                                 authorName: String,
                                 subjectName: String,
                                 courseName: String,
@@ -58,6 +96,13 @@ open class PdfGenerator {
                                 contactsString: String,
                                 academicYear: String,
                                 drawCornell: Boolean = true) {
+
+        val page = pdfDocument.addNewPage(PAGE_SIZE)
+        val canvas = PdfCanvas(page)
+                .setLineWidth(0.1f)
+                .setStrokeColor(Color.GRAY)
+                .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
+
         val TOP_FONT_SIZE = 11f
         val BOTTOM_FONT_SIZE = 8f
         val CELL_SIDE = 5 / 25.4f * 72
@@ -160,5 +205,17 @@ open class PdfGenerator {
             canvas.restoreState()
         }
         return gridBorders
+    }
+
+    private fun calculateCenteredTextX(width: Float, string: String, font: PdfFont, fontSize: Float): Double {
+        return (width - font.getWidth(string, fontSize)) / 2.0
+    }
+
+    private fun showText(canvas: PdfCanvas, x: Double, y: Double, text: String, font: PdfFont, fontSize: Float) {
+        canvas.beginText()
+                .setFontAndSize(font, fontSize)
+                .moveText(x, y)
+                .showText(text)
+                .endText()
     }
 }

@@ -3,7 +3,9 @@ package ru.edustor.pdfgen.controller
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 import ru.edustor.pdfgen.internal.PdfGenerator
+import java.io.ByteArrayOutputStream
 import javax.servlet.http.HttpServletResponse
 
 @Controller
@@ -14,6 +16,7 @@ class RootController(private val pdfGenerator: PdfGenerator) {
     }
 
     @RequestMapping("/pdf")
+    @ResponseBody
     fun pdf(resp: HttpServletResponse,
             @RequestParam author: String,
             @RequestParam subject: String,
