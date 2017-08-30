@@ -22,6 +22,11 @@ class RootController(private val pdfGenerator: PdfGenerator) {
             @RequestParam contacts: String,
             @RequestParam(defaultValue = "false") cornell: Boolean) {
         resp.setHeader("Content-Type", "application/pdf")
+        val filename = when {
+            subject != "" -> "edustor-$subject.pdf"
+            else -> "edustor-unnamed.pdf"
+        }
+        resp.setHeader("Content-Disposition", """inline; filename="$filename"""")
         pdfGenerator.makePdf(resp.outputStream, author, subject, course, copyright, contacts, cornell)
     }
 }
