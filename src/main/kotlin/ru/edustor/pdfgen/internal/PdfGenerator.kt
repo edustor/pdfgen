@@ -12,12 +12,17 @@ import com.itextpdf.kernel.pdf.canvas.PdfCanvasConstants
 import org.springframework.stereotype.Component
 import java.io.OutputStream
 import java.time.LocalDateTime
+import java.time.Month
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Component
-open class PdfGenerator() {
-    fun makePdf(outputStream: OutputStream, pageCount: Int) {
+open class PdfGenerator {
+    fun makePdf(outputStream: OutputStream,
+                subjectName: String? = null,
+                courseName: String = "1 курс МОиАИС ПММ ВГУ",
+                copyrightString: String = "VSU University, Dmitry Romanov",
+                contactsString: String = "wutiarn.ru | t.me/wutiarn | me@wutiarn.ru",
+                drawCornell: Boolean = true) {
         val pdfWriter = PdfWriter(outputStream)
         val pdfDocument = PdfDocument(pdfWriter)
         pdfDocument.documentInfo.title = "Edustor blank pages"
@@ -31,49 +36,53 @@ open class PdfGenerator() {
         val CELL_SIDE = 5 / 25.4f * 72
 
         val now = LocalDateTime.now(ZoneId.of("Europe/Moscow")).withNano(0)
-        val nowStr = "${now.format(DateTimeFormatter.ISO_LOCAL_DATE)} ${now.format(DateTimeFormatter.ISO_LOCAL_TIME)} MSK"
+        val academicYearStr = when {
+            now.month > Month.JUNE -> "${now.year}-${now.year + 1}"
+            else -> "${now.year - 1}-${now.year}"
+        }
 
-        for (i in 1..pageCount) {
-            val page = pdfDocument.addNewPage(PAGE_SIZE)
-            val canvas = PdfCanvas(page)
-                    .setLineWidth(0.1f)
-                    .setStrokeColor(Color.GRAY)
-                    .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
+        val page = pdfDocument.addNewPage(PAGE_SIZE)
+        val canvas = PdfCanvas(page)
+                .setLineWidth(0.1f)
+                .setStrokeColor(Color.GRAY)
+                .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
 //            Draw grid
-            val gridArea = drawGrid(canvas, PAGE_SIZE, CELL_SIDE, 40, 56)
+        val gridArea = drawGrid(canvas, PAGE_SIZE, CELL_SIDE, 40, 56, drawCornell)
 
 //            Print top row
-            val topIdString = "1 курс МОиАИС ПММ ВГУ"
-            val topRowY = gridArea.top.toDouble() + 3
-            canvas.beginText()
-                    .setFontAndSize(proximaNovaFont, TOP_FONT_SIZE)
-                    .moveText(gridArea.left.toDouble(), topRowY)
-                    .showText("Edustor Digital")
-                    .endText()
+        val topRowY = gridArea.top.toDouble() + 3
+        canvas.beginText()
+                .setFontAndSize(proximaNovaFont, TOP_FONT_SIZE)
+                .moveText(gridArea.left.toDouble(), topRowY)
+                .showText("Edustor Digital")
+                .endText()
 
-            canvas.beginText()
-                    .moveText(gridArea.right.toDouble() - proximaNovaFont.getWidth(topIdString, TOP_FONT_SIZE),
-                            topRowY)
-                    .showText(topIdString)
-                    .endText()
+        val topRightString = when {
+            subjectName != null -> "$subjectName, $courseName"
+            else -> courseName
+        }
 
-            canvas.setFontAndSize(proximaNovaFont, BOTTOM_FONT_SIZE)
+        canvas.beginText()
+                .moveText(gridArea.right.toDouble() - proximaNovaFont.getWidth(topRightString, TOP_FONT_SIZE),
+                        topRowY)
+                .showText(topRightString)
+                .endText()
+
+        canvas.setFontAndSize(proximaNovaFont, BOTTOM_FONT_SIZE)
 
 //            Print bottom row
-            val bottomRowY = gridArea.bottom.toDouble() - 9
-            canvas.beginText()
-                    .moveText(gridArea.left.toDouble(), bottomRowY)
-                    .showText("© VSU University, Dmitry Romanov 2017-2018")
-                    .endText()
+        val bottomRowY = gridArea.bottom.toDouble() - 9
+        canvas.beginText()
+                .moveText(gridArea.left.toDouble(), bottomRowY)
+                .showText("© $copyrightString $academicYearStr")
+                .endText()
 
-            val pageIdStr = "wutiarn.ru | t.me/wutiarn | me@wutiarn.ru"
-            canvas.beginText()
-                    .moveText(gridArea.right.toDouble() - proximaNovaFont.getWidth(pageIdStr, BOTTOM_FONT_SIZE),
-                            bottomRowY)
-                    .showText(pageIdStr)
-                    .endText()
-        }
+        canvas.beginText()
+                .moveText(gridArea.right.toDouble() - proximaNovaFont.getWidth(contactsString, BOTTOM_FONT_SIZE),
+                        bottomRowY)
+                .showText(contactsString)
+                .endText()
         pdfDocument.close()
     }
 
@@ -84,7 +93,8 @@ open class PdfGenerator() {
      * @param cellSide Cell side length, in pt
      * @return Grid borders rectangle
      */
-    private fun drawGrid(canvas: PdfCanvas, pageSize: Rectangle, cellSide: Float, xCells: Int, yCells: Int): Rectangle {
+    private fun drawGrid(canvas: PdfCanvas, pageSize: Rectangle, cellSide: Float,
+                         xCells: Int, yCells: Int, drawCornell: Boolean): Rectangle {
         val xMargin = (pageSize.width - (xCells * cellSide)) / 2
         val yMargin = (pageSize.height - (yCells * cellSide)) / 2
         if (xMargin < 0 || yMargin < 0) {
@@ -110,27 +120,27 @@ open class PdfGenerator() {
                 }
 
 //        Cornell template
-        canvas.saveState()
-                .setLineWidth(1f)
+        if (drawCornell) {
+            canvas.saveState()
+                    .setLineWidth(1f)
 
-        val titleLineY = (gridBorders.top - 3 * cellSide).toDouble()
-        canvas.moveTo(gridBorders.left.toDouble(), titleLineY)
-                .lineTo(gridBorders.right.toDouble(), titleLineY)
-                .stroke()
+            val titleLineY = (gridBorders.top - 3 * cellSide).toDouble()
+            canvas.moveTo(gridBorders.left.toDouble(), titleLineY)
+                    .lineTo(gridBorders.right.toDouble(), titleLineY)
+                    .stroke()
 
-        val summaryLineY = (gridBorders.bottom + 5 * cellSide).toDouble()
-        canvas.moveTo(gridBorders.left.toDouble(), summaryLineY)
-                .lineTo(gridBorders.right.toDouble(), summaryLineY)
-                .stroke()
+            val summaryLineY = (gridBorders.bottom + 5 * cellSide).toDouble()
+            canvas.moveTo(gridBorders.left.toDouble(), summaryLineY)
+                    .lineTo(gridBorders.right.toDouble(), summaryLineY)
+                    .stroke()
 
-        val notesLineX = (gridBorders.left + 8 * cellSide).toDouble()
-        canvas.moveTo(notesLineX, gridBorders.top.toDouble())
-                .lineTo(notesLineX, (gridBorders.bottom + 5 * cellSide).toDouble())
-                .stroke()
+            val notesLineX = (gridBorders.left + 8 * cellSide).toDouble()
+            canvas.moveTo(notesLineX, gridBorders.top.toDouble())
+                    .lineTo(notesLineX, (gridBorders.bottom + 5 * cellSide).toDouble())
+                    .stroke()
 
-        canvas.restoreState()
-
-
+            canvas.restoreState()
+        }
         return gridBorders
     }
 }
