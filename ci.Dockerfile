@@ -4,5 +4,4 @@ WORKDIR /code
 
 ADD build/dist/edustor-pdfgen.jar .
 
-HEALTHCHECK CMD curl -f http://localhost:8080/version
 CMD java -jar edustor-pdfgen.jar
