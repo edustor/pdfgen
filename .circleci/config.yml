@@ -44,23 +44,24 @@ jobs:
     environment:
       TERM: dumb
       IMAGE_NAME: quay.io/edustor/pdfgen
-      SWARM_CA_URL: https://wutiarn.keybase.pub/swarm/ca.pem
-      SWARM_CERT_URL: https://wutiarn.keybase.pub/swarm/cert.pem
-      DOCKER_HOST: swarm.wutiarn.ru:2376
-      DOCKER_TLS_VERIFY: 1
-      DOCKER_CERT_PATH: /root/.docker
+#      SWARM_CA_URL: https://wutiarn.keybase.pub/swarm/ca.pem
+#      SWARM_CERT_URL: https://wutiarn.keybase.pub/swarm/cert.pem
+#      DOCKER_HOST: swarm.wutiarn.ru:2376
+#      DOCKER_TLS_VERIFY: 1
+#      DOCKER_CERT_PATH: /root/.docker
     steps:
       - checkout
       - restore_cache:
           key: edustor-pdfgen-{{ .Revision }}
-      - run:
-          name: Setup remote docker
-          command: |
-            apk add --no-cache curl
-            mkdir -p /root/.docker
-            curl -sSL $SWARM_CA_URL > /root/.docker/ca.pem
-            curl -sSL $SWARM_CERT_URL > /root/.docker/cert.pem
-            echo ${SWARM_KEY} | base64 -d > /root/.docker/key.pem
+      - setup_remote_docker
+#      - run:
+#          name: Setup remote docker
+#          command: |
+#            apk add --no-cache curl
+#            mkdir -p /root/.docker
+#            curl -sSL $SWARM_CA_URL > /root/.docker/ca.pem
+#            curl -sSL $SWARM_CERT_URL > /root/.docker/cert.pem
+#            echo ${SWARM_KEY} | base64 -d > /root/.docker/key.pem
       - run:
           name: Build docker image
           command: |
@@ -72,6 +73,6 @@ jobs:
           command: |
             docker push $IMAGE_NAME:latest | cat
             docker push $IMAGE_NAME:ci-$CIRCLE_BUILD_NUM | cat
-      - run:
-          name: Deploy to swarm
-          command: docker service update --with-registry-auth --image $IMAGE_NAME:ci-$CIRCLE_BUILD_NUM sw0_edustor-pdfgen
+#      - run:
+#          name: Deploy to swarm
+#          command: docker service update --with-registry-auth --image $IMAGE_NAME:ci-$CIRCLE_BUILD_NUM sw0_edustor-pdfgen
