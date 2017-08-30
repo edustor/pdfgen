@@ -109,6 +109,28 @@ open class PdfGenerator() {
                             .stroke()
                 }
 
+//        Cornell template
+        canvas.saveState()
+                .setLineWidth(1f)
+
+        val titleLineY = (gridBorders.top - 3 * cellSide).toDouble()
+        canvas.moveTo(gridBorders.left.toDouble(), titleLineY)
+                .lineTo(gridBorders.right.toDouble(), titleLineY)
+                .stroke()
+
+        val summaryLineY = (gridBorders.bottom + 5 * cellSide).toDouble()
+        canvas.moveTo(gridBorders.left.toDouble(), summaryLineY)
+                .lineTo(gridBorders.right.toDouble(), summaryLineY)
+                .stroke()
+
+        val notesLineX = (gridBorders.left + 8 * cellSide).toDouble()
+        canvas.moveTo(notesLineX, gridBorders.top.toDouble())
+                .lineTo(notesLineX, (gridBorders.bottom + 5 * cellSide).toDouble())
+                .stroke()
+
+        canvas.restoreState()
+
+
         return gridBorders
     }
 }
