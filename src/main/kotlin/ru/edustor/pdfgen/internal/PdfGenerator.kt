@@ -24,6 +24,7 @@ open class PdfGenerator {
     private val PAGE_SIZE = PageSize.A4
 
     fun makePdf(outputStream: OutputStream,
+                filename: String,
                 authorName: String,
                 subjectName: String,
                 courseName: String,
@@ -33,7 +34,7 @@ open class PdfGenerator {
                 generateTitle: Boolean = true) {
         val pdfWriter = PdfWriter(outputStream)
         val pdfDocument = PdfDocument(pdfWriter)
-        pdfDocument.documentInfo.title = "Edustor blank pages"
+        pdfDocument.documentInfo.title = filename
 
         val now = LocalDateTime.now(ZoneId.of("Europe/Moscow")).withNano(0)
         val academicYear = when {
