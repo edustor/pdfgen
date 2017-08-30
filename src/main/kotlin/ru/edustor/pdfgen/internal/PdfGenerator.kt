@@ -17,6 +17,12 @@ import java.time.ZoneId
 
 @Component
 open class PdfGenerator {
+
+
+    val fontBytes = this.javaClass.getResource("/fonts/Proxima Nova Thin.ttf").readBytes()
+    val proximaNovaFont = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H, true, true)
+    val PAGE_SIZE = PageSize.A4
+
     fun makePdf(outputStream: OutputStream,
                 authorName: String,
                 subjectName: String,
@@ -28,16 +34,8 @@ open class PdfGenerator {
         val pdfDocument = PdfDocument(pdfWriter)
         pdfDocument.documentInfo.title = "Edustor blank pages"
 
-        val fontBytes = this.javaClass.getResource("/fonts/Proxima Nova Thin.ttf").readBytes()
-        val proximaNovaFont = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H, true, true)
-
-        val TOP_FONT_SIZE = 11f
-        val BOTTOM_FONT_SIZE = 8f
-        val PAGE_SIZE = PageSize.A4
-        val CELL_SIDE = 5 / 25.4f * 72
-
         val now = LocalDateTime.now(ZoneId.of("Europe/Moscow")).withNano(0)
-        val academicYearStr = when {
+        val academicYear = when {
             now.month > Month.JUNE -> "${now.year}-${now.year + 1}"
             else -> "${now.year - 1}-${now.year}"
         }
@@ -47,6 +45,22 @@ open class PdfGenerator {
                 .setLineWidth(0.1f)
                 .setStrokeColor(Color.GRAY)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
+        drawRegularPage(canvas, authorName, subjectName, courseName, copyrightString, contactsString, academicYear, drawCornell)
+
+        pdfDocument.close()
+    }
+
+    private fun drawRegularPage(canvas: PdfCanvas,
+                                authorName: String,
+                                subjectName: String,
+                                courseName: String,
+                                copyrightString: String,
+                                contactsString: String,
+                                academicYear: String,
+                                drawCornell: Boolean = true) {
+        val TOP_FONT_SIZE = 11f
+        val BOTTOM_FONT_SIZE = 8f
+        val CELL_SIDE = 5 / 25.4f * 72
 
 //            Draw grid
         val gridArea = drawGrid(canvas, PAGE_SIZE, CELL_SIDE, 40, 56, drawCornell)
@@ -80,7 +94,7 @@ open class PdfGenerator {
         val bottomRowY = gridArea.bottom.toDouble() - 9
         canvas.beginText()
                 .moveText(gridArea.left.toDouble(), bottomRowY)
-                .showText("© $copyrightString $academicYearStr")
+                .showText("© $copyrightString $academicYear")
                 .endText()
 
         canvas.beginText()
@@ -88,7 +102,6 @@ open class PdfGenerator {
                         bottomRowY)
                 .showText(contactsString)
                 .endText()
-        pdfDocument.close()
     }
 
     /**
