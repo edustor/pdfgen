@@ -29,7 +29,8 @@ open class PdfGenerator {
                 courseName: String,
                 copyrightString: String,
                 contactsString: String,
-                drawCornell: Boolean = true) {
+                drawCornell: Boolean = true,
+                generateTitle: Boolean = true) {
         val pdfWriter = PdfWriter(outputStream)
         val pdfDocument = PdfDocument(pdfWriter)
         pdfDocument.documentInfo.title = "Edustor blank pages"
@@ -43,7 +44,9 @@ open class PdfGenerator {
 //        Looks like it's necessary to create new PdfFont instance for each document
         val proximaNovaFont = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H, true, false)
 
-        drawTitlePage(pdfDocument, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear)
+        if (generateTitle) {
+            drawTitlePage(pdfDocument, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear)
+        }
         drawRegularPage(pdfDocument, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear, drawCornell)
 
         pdfDocument.close()
@@ -75,10 +78,10 @@ open class PdfGenerator {
                 PAGE_SIZE.top - 400.0, subjectName, proximaNovaFont, 30f)
 
         showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, authorName, proximaNovaFont, 18f),
-                PAGE_SIZE.bottom + 270.0, authorName, proximaNovaFont, 18f)
+                PAGE_SIZE.bottom + 100.0, authorName, proximaNovaFont, 18f)
 
         showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, contactsString, proximaNovaFont, 10f),
-                PAGE_SIZE.bottom + 250.0, contactsString, proximaNovaFont, 10f)
+                PAGE_SIZE.bottom + 80.0, contactsString, proximaNovaFont, 10f)
 
         val finalCopyrightString = "© $copyrightString $academicYear"
         showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, finalCopyrightString, proximaNovaFont, 10f),

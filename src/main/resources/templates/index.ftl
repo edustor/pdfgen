@@ -27,7 +27,11 @@
         <input name="contacts" type="text" size="70" value="wutiarn.ru | t.me/wutiarn | me@wutiarn.ru">
     </div>
     <div>
-        <label for="cornell">Use Cornell lines</label>
+        <label for="generateTitle">Generate title page</label>
+        <input name="generateTitle" type="checkbox" checked="checked">
+    </div>
+    <div>
+        <label for="cornell">Use Cornell markup</label>
         <input name="cornell" type="checkbox" checked="checked">
     </div>
     <br>
