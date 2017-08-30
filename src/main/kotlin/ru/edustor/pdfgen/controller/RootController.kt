@@ -11,6 +11,6 @@ class RootController(val pdfGenerator: PdfGenerator) {
     @RequestMapping("/", "/{pageCount}")
     fun root(resp: HttpServletResponse, @PathVariable(required = false) pageCount: Int?) {
         resp.setHeader("Content-Type", "application/pdf")
-        pdfGenerator.makePdf(resp.outputStream, pageCount ?: 10)
+        pdfGenerator.makePdf(resp.outputStream, pageCount ?: 1)
     }
 }
