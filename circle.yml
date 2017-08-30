@@ -50,13 +50,13 @@ deployment:
       - docker tag result quay.io/edustor/pdfgen:latest
       - docker push quay.io/edustor/pdfgen:ci-$CIRCLE_BUILD_NUM | cat
       - docker push quay.io/edustor/pdfgen:latest | cat
-      - docker run
-        -e DOCKER_HOST=swarm.wutiarn.ru:2376
-        -e DOCKER_TLS_VERIFY=1
-        -e CA_URL=https://wutiarn.keybase.pub/swarm/ca.pem
-        -e CERT_URL=https://wutiarn.keybase.pub/swarm/cert.pem
-        -e KEY="$DOCKER_KEY"
-        quay.io/wutiarn/docker-deployer
-        docker service update --image quay.io/edustor/pdfgen:ci-$CIRCLE_BUILD_NUM sw0_edustor-pdfgen
+#      - docker run
+#        -e DOCKER_HOST=swarm.wutiarn.ru:2376
+#        -e DOCKER_TLS_VERIFY=1
+#        -e CA_URL=https://wutiarn.keybase.pub/swarm/ca.pem
+#        -e CERT_URL=https://wutiarn.keybase.pub/swarm/cert.pem
+#        -e KEY="$DOCKER_KEY"
+#        quay.io/wutiarn/docker-deployer
+#        docker service update --image quay.io/edustor/pdfgen:ci-$CIRCLE_BUILD_NUM sw0_edustor-pdfgen
 # REQUIRED ENVIRONMENTS
 # QUAY_CACHE_PASSWORD QUAY_EDUSTOR_PASSWORD DOCKER_KEY GITHUB_TOKEN

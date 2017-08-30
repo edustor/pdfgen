@@ -18,10 +18,11 @@ import java.time.ZoneId
 @Component
 open class PdfGenerator {
     fun makePdf(outputStream: OutputStream,
-                subjectName: String? = null,
-                courseName: String = "1 курс МОиАИС ПММ ВГУ",
-                copyrightString: String = "VSU University, Dmitry Romanov",
-                contactsString: String = "wutiarn.ru | t.me/wutiarn | me@wutiarn.ru",
+                authorName: String,
+                subjectName: String,
+                courseName: String,
+                copyrightString: String,
+                contactsString: String,
                 drawCornell: Boolean = true) {
         val pdfWriter = PdfWriter(outputStream)
         val pdfDocument = PdfDocument(pdfWriter)
@@ -51,15 +52,19 @@ open class PdfGenerator {
         val gridArea = drawGrid(canvas, PAGE_SIZE, CELL_SIDE, 40, 56, drawCornell)
 
 //            Print top row
+        val titleRow = when {
+            authorName != "" -> "Edustor Digital: $authorName"
+            else -> "Edustor Digital"
+        }
         val topRowY = gridArea.top.toDouble() + 3
         canvas.beginText()
                 .setFontAndSize(proximaNovaFont, TOP_FONT_SIZE)
                 .moveText(gridArea.left.toDouble(), topRowY)
-                .showText("Edustor Digital")
+                .showText(titleRow)
                 .endText()
 
         val topRightString = when {
-            subjectName != null -> "$subjectName, $courseName"
+            subjectName != "" -> "$subjectName, $courseName"
             else -> courseName
         }
 

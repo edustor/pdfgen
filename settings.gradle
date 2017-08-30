@@ -1,3 +1,1 @@
 rootProject.name = 'pdfgen'
-
-include ':edustor-commons:version'
