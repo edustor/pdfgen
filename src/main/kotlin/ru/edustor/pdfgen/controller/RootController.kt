@@ -1,16 +1,27 @@
 package ru.edustor.pdfgen.controller
 
-import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.RequestParam
 import ru.edustor.pdfgen.internal.PdfGenerator
 import javax.servlet.http.HttpServletResponse
 
-@RestController
-class RootController(val pdfGenerator: PdfGenerator) {
-    @RequestMapping("/", "/{pageCount}")
-    fun root(resp: HttpServletResponse, @PathVariable(required = false) pageCount: Int?) {
+@Controller
+class RootController(private val pdfGenerator: PdfGenerator) {
+    @RequestMapping("/")
+    fun root(): String {
+        return "index"
+    }
+
+    @RequestMapping("/pdf")
+    fun pdf(resp: HttpServletResponse,
+            @RequestParam author: String,
+            @RequestParam subject: String,
+            @RequestParam course: String,
+            @RequestParam copyright: String,
+            @RequestParam contacts: String,
+            @RequestParam(defaultValue = "false") cornell: Boolean) {
         resp.setHeader("Content-Type", "application/pdf")
-        pdfGenerator.makePdf(resp.outputStream, pageCount ?: 10)
+        pdfGenerator.makePdf(resp.outputStream, author, subject, course, copyright, contacts, cornell)
     }
 }
