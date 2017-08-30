@@ -32,7 +32,7 @@ class RootController(private val pdfGenerator: PdfGenerator) {
         }
 
         val byteArrayOutputStream = ByteArrayOutputStream()
-        pdfGenerator.makePdf(byteArrayOutputStream, filename, author, subject, course, copyright, contacts, cornell, generateTitle)
+        pdfGenerator.makePdf(byteArrayOutputStream, filename, author, subject, course, copyright, contacts, cornell, generateTitle && subject != "")
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
