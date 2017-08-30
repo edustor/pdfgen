@@ -61,8 +61,6 @@ task createProperties(dependsOn: processResources) {
 processResources.finalizedBy createProperties
 
 dependencies {
-    compile project(':edustor-commons:version')
-
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.springframework.boot:spring-boot-starter-web"
     compile 'com.itextpdf:kernel:7.0.1'

@@ -1,7 +1,6 @@
 package ru.edustor.pdfgen.internal
 
 import com.itextpdf.io.font.PdfEncodings
-import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.color.Color
 import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.geom.PageSize
@@ -11,14 +10,13 @@ import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas
 import com.itextpdf.kernel.pdf.canvas.PdfCanvasConstants
 import org.springframework.stereotype.Component
-import ru.edustor.commons.version.EdustorVersionInfoHolder
 import java.io.OutputStream
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Component
-open class PdfGenerator(val versionInfoHolder: EdustorVersionInfoHolder) {
+open class PdfGenerator() {
     fun makePdf(outputStream: OutputStream, pageCount: Int) {
         val pdfWriter = PdfWriter(outputStream)
         val pdfDocument = PdfDocument(pdfWriter)
