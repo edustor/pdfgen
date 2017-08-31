@@ -19,12 +19,12 @@ import java.time.ZoneId
 @Component
 open class PdfGenerator {
 
-
     private val fontBytes = this.javaClass.getResource("/fonts/Proxima Nova Thin.ttf").readBytes()
     private val PAGE_SIZE = PageSize.A4
 
     fun makePdf(outputStream: OutputStream,
                 filename: String,
+                pagesCount: Int,
                 authorName: String,
                 subjectName: String,
                 courseName: String,
@@ -48,7 +48,10 @@ open class PdfGenerator {
         if (generateTitle) {
             drawTitlePage(pdfDocument, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear)
         }
-        drawRegularPage(pdfDocument, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear, drawCornell)
+
+        (1..pagesCount).forEach {
+            drawRegularPage(pdfDocument, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear, drawCornell)
+        }
 
         pdfDocument.close()
     }
@@ -115,9 +118,14 @@ open class PdfGenerator {
         val gridArea = drawGrid(canvas, PAGE_SIZE, CELL_SIDE, 40, 56, drawCornell)
 
 //            Print top row
+        val edustorStr = when {
+            subjectName != "" -> "Edustor Digital"
+            else -> "Edustor Paper"
+        }
+
         val titleRow = when {
-            authorName != "" -> "Edustor Digital: $authorName"
-            else -> "Edustor Digital"
+            authorName != "" -> "$edustorStr: $authorName"
+            else -> edustorStr
         }
         val topRowY = gridArea.top.toDouble() + 3
         canvas.beginText()

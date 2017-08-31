@@ -24,15 +24,16 @@ class RootController(private val pdfGenerator: PdfGenerator) {
             @RequestParam course: String,
             @RequestParam copyright: String,
             @RequestParam contacts: String,
+            @RequestParam pagesCount: Int,
             @RequestParam(defaultValue = "false") cornell: Boolean,
             @RequestParam(defaultValue = "false") generateTitle: Boolean): HttpEntity<ByteArray> {
         val filename = when {
             subject != "" -> "$subject.pdf"
-            else -> "edustor-unnamed.pdf"
+            else -> "edustor-paper.pdf"
         }
 
         val byteArrayOutputStream = ByteArrayOutputStream()
-        pdfGenerator.makePdf(byteArrayOutputStream, filename, author, subject, course, copyright, contacts, cornell, generateTitle && subject != "")
+        pdfGenerator.makePdf(byteArrayOutputStream, filename, pagesCount, author, subject, course, copyright, contacts, cornell, generateTitle && subject != "")
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
