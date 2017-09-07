@@ -24,7 +24,7 @@
     </div>
     <div>
         <label for="contacts">Contacts</label>
-        <input name="contacts" type="text" size="70" value="wutiarn.ru | t.me/wutiarn | me@wutiarn.ru">
+        <input name="contacts" type="text" size="70" value="wutiarn.com | t.me/wutiarn | vsu@wutiarn.com">
     </div>
     <div>
         <label for="pagesCount">Regular pages count</label>
