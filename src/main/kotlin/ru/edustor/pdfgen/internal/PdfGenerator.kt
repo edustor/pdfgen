@@ -115,12 +115,12 @@ open class PdfGenerator {
         val y = targetArea.top.toDouble()
         val rowWidth = targetArea.width.toDouble()
 
-        val cellCounts = arrayOf(3, 1)
-        val width = cellCounts.sum() * (t.markerSide + 2) + cellCounts.size * t.markerSide
+        val cellConfig = arrayOf(4, 4)
+        val width = cellConfig.sum() * (t.markerSide + 2) + cellConfig.size * t.markerSide
 
         var currentX = (targetArea.width - width) / 2
 
-        cellCounts.forEach { count ->
+        cellConfig.forEach { count ->
             currentX = drawMetaCells(canvas, t, currentX, y, count)
         }
     }
