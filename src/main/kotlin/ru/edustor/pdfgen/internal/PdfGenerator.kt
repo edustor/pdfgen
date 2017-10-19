@@ -116,8 +116,10 @@ open class PdfGenerator {
 //            Draw grid
         val gridArea = drawGrid(canvas, gridStartPoint, 40, 56, drawCornell)
 
-        val markersArea = Rectangle(gridArea.x, gridArea.y, gridArea.width,gridArea.height + 3)
+        val markersArea = Rectangle(gridArea.x, gridArea.y, gridArea.width, gridArea.height + 3)
         drawMarkers(canvas, markersArea)
+
+        drawMetaFields(canvas, markersArea, proximaNovaFont)
 
         val labelsArea = Rectangle(gridArea.x, gridArea.y - 9, gridArea.width, gridArea.height + 15)
         drawRegularPageLabels(canvas, labelsArea, true, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear)
@@ -139,6 +141,43 @@ open class PdfGenerator {
         canvas.fillStroke()
 
         canvas.restoreState()
+    }
+
+    private fun drawMetaFields(canvas: PdfCanvas, targetArea: Rectangle, proximaNovaFont: PdfFont) {
+        canvas.saveState()
+
+        val y = targetArea.top.toDouble()
+        val rowWidth = targetArea.width.toDouble()
+        val cellSide = cellSide.toDouble()
+
+        var currentX = targetArea.x + rowWidth * 0.4
+
+        arrayOf(4, 3, 1).forEach { count ->
+            currentX = drawMetaCells(canvas, currentX, y, count) + 10
+        }
+
+        canvas.restoreState()
+    }
+
+    private fun drawMetaCells(canvas: PdfCanvas, x: Double, y: Double, count: Int): Double {
+        canvas.saveState()
+
+        canvas.setLineWidth(0.1f)
+                .setStrokeColor(Color.BLACK)
+                .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
+
+        val cellSide = cellSide.toDouble()
+
+        var currentX = x
+
+        (1..count).forEach {
+            canvas.rectangle(currentX, y, cellSide, cellSide)
+            currentX += (cellSide + 2)
+        }
+        canvas.stroke()
+
+        canvas.restoreState()
+        return currentX
     }
 
     private fun drawRegularPageLabels(canvas: PdfCanvas,
