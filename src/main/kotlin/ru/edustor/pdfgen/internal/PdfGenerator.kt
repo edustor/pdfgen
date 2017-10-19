@@ -22,7 +22,7 @@ open class PdfGenerator {
     private val fontBytes = this.javaClass.getResource("/fonts/Proxima Nova Thin.ttf").readBytes()
     private val pageSize = PageSize.A4
     private val cellSide = 5 / 25.4f * 72
-    private val markerSide = 10.0
+    private val markerSide = cellSide.toDouble()
 
     fun makePdf(outputStream: OutputStream,
                 filename: String,
@@ -111,11 +111,9 @@ open class PdfGenerator {
 
 //            Draw grid
         val gridArea = drawGrid(canvas, pageSize, 40, 56, drawCornell)
+        drawMarkers(canvas, gridArea)
 
-        val markersArea = Rectangle(gridArea.x, (gridArea.y - markerSide - 3).toFloat(), gridArea.width, (gridArea.height + markerSide + 6).toFloat())
-        drawMarkers(canvas, markersArea)
-
-        val labelsArea = Rectangle((gridArea.x + markerSide + 3).toFloat(), gridArea.y - 11, (gridArea.width - (markerSide + 3) * 2).toFloat(), gridArea.height + 15)
+        val labelsArea = Rectangle(gridArea.x, gridArea.y - 11, gridArea.width, gridArea.height + 15)
         drawRegularPageLabels(canvas, labelsArea, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear)
     }
 
@@ -130,8 +128,8 @@ open class PdfGenerator {
         canvas.setFillColor(Color.BLACK)
         canvas.rectangle(tLeft, tBottom, markerSide, markerSide)
         canvas.rectangle(tRight - markerSide, tBottom, markerSide, markerSide)
-        canvas.rectangle(tLeft, tTop, markerSide, markerSide)
-        canvas.rectangle(tRight - markerSide, tTop, markerSide, markerSide)
+        canvas.rectangle(tLeft, tTop - markerSide, markerSide, markerSide)
+        canvas.rectangle(tRight - markerSide, tTop - markerSide, markerSide, markerSide)
         canvas.fillStroke()
 
         canvas.restoreState()
@@ -148,9 +146,6 @@ open class PdfGenerator {
                                       academicYear: String) {
         val TOP_FONT_SIZE = 11f
         val BOTTOM_FONT_SIZE = 8f
-
-        canvas.rectangle(targetArea)
-
 
 //            Print top row
         val edustorStr = when {

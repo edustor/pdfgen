@@ -37,7 +37,7 @@ class RootController(private val pdfGenerator: PdfGenerator) {
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
-        headers.setContentDispositionFormData("file", filename, Charsets.UTF_8)
+//        headers.setContentDispositionFormData("file", filename, Charsets.UTF_8)
 
         return HttpEntity(byteArrayOutputStream.toByteArray(), headers)
 
