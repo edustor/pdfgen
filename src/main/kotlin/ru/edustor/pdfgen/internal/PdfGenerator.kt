@@ -113,10 +113,9 @@ open class PdfGenerator {
 
     private fun drawMetaFields(canvas: PdfCanvas, targetArea: Rectangle, proximaNovaFont: PdfFont, t: EdustorPdfType) {
         val y = targetArea.top.toDouble()
-        val rowWidth = targetArea.width.toDouble()
 
-        val cellConfig = arrayOf(4, 4)
-        val width = cellConfig.sum() * (t.markerSide + 2) + cellConfig.size * t.markerSide
+        val cellConfig = arrayOf(4, 4, 2)
+        val width = cellConfig.sum() * (t.markerSide + t.metaCellPadding) + (cellConfig.size - 1) * t.metaCellGroupPadding - t.metaCellPadding
 
         var currentX = (targetArea.width - width) / 2
 
@@ -136,12 +135,12 @@ open class PdfGenerator {
 
         (1..count).forEach {
             canvas.rectangle(currentX, y, t.markerSide, t.markerSide)
-            currentX += (t.markerSide + 2)
+            currentX += (t.markerSide + t.metaCellPadding)
         }
         canvas.stroke()
 
         canvas.restoreState()
-        return currentX + (t.markerSide + 2)
+        return currentX + t.metaCellGroupPadding
     }
 
     private fun drawRegularPageLabels(canvas: PdfCanvas,

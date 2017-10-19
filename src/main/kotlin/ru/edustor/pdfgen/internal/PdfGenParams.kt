@@ -38,8 +38,10 @@ data class EdustorPdfType(
         val topFontSize: Float,
         val bottomFontSize: Float,
         val bottomLabelMargin: Double,
-        val markersEnabled: Boolean,
-        val markerSide: Double
+        val markersEnabled: Boolean = false,
+        val markerSide: Double = 0.0,
+        val metaCellPadding: Double = 0.0,
+        val metaCellGroupPadding: Double = 0.0
 )
 
 object EdustorPdfTypes {
@@ -61,7 +63,9 @@ object EdustorPdfTypes {
                     bottomFontSize = 8f,
                     bottomLabelMargin = 3.0,
                     markersEnabled = true,
-                    markerSide = gridCellSide
+                    markerSide = gridCellSide,
+                    metaCellPadding = 2.0,
+                    metaCellGroupPadding = 5.0
             )
         }
 
@@ -81,9 +85,7 @@ object EdustorPdfTypes {
                     gridYCells = 56,
                     topFontSize = 11f,
                     bottomFontSize = 8f,
-                    bottomLabelMargin = 0.0,
-                    markersEnabled = false,
-                    markerSide = gridCellSide
+                    bottomLabelMargin = 0.0
             )
         }
 }
