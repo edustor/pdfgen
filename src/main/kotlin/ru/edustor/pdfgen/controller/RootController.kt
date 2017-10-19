@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
+import ru.edustor.pdfgen.internal.EdustorPdfTypes
+import ru.edustor.pdfgen.internal.PdfGenParams
 import ru.edustor.pdfgen.internal.PdfGenerator
 import java.io.ByteArrayOutputStream
 
@@ -33,7 +35,9 @@ class RootController(private val pdfGenerator: PdfGenerator) {
         }
 
         val byteArrayOutputStream = ByteArrayOutputStream()
-        pdfGenerator.makePdf(byteArrayOutputStream, filename, pagesCount, author, subject, course, copyright, contacts, cornell, generateTitle && subject != "")
+
+        val params = PdfGenParams(EdustorPdfTypes.PAPER, pagesCount, author, subject, course, copyright, contacts, cornell, generateTitle && subject != "")
+        pdfGenerator.makePdf(byteArrayOutputStream, filename, params)
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
