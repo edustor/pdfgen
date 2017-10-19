@@ -112,31 +112,23 @@ open class PdfGenerator {
     }
 
     private fun drawMetaFields(canvas: PdfCanvas, targetArea: Rectangle, proximaNovaFont: PdfFont, t: EdustorPdfType) {
-        canvas.saveState()
-
         val y = targetArea.top.toDouble()
         val rowWidth = targetArea.width.toDouble()
 
-        var currentX = targetArea.x + rowWidth * 0.4
+        val cellCounts = arrayOf(3, 1)
+        val width = cellCounts.sum() * (t.markerSide + 2) + cellCounts.size * t.markerSide
 
-        canvas.setFillColor(Color.BLACK)
-        canvas.rectangle(currentX, y, t.markerSide, t.markerSide)
-        canvas.fillStroke()
+        var currentX = (targetArea.width - width) / 2
 
-        arrayOf(3, 1).forEach { count ->
-            currentX += t.markerSide + 2
+        cellCounts.forEach { count ->
             currentX = drawMetaCells(canvas, t, currentX, y, count)
-            canvas.rectangle(currentX, y, t.markerSide, t.markerSide)
-            canvas.fillStroke()
         }
-
-        canvas.restoreState()
     }
 
     private fun drawMetaCells(canvas: PdfCanvas, t: EdustorPdfType, x: Double, y: Double, count: Int): Double {
         canvas.saveState()
 
-        canvas.setLineWidth(0.1f)
+        canvas.setLineWidth(0.5f)
                 .setStrokeColor(Color.BLACK)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
@@ -149,7 +141,7 @@ open class PdfGenerator {
         canvas.stroke()
 
         canvas.restoreState()
-        return currentX
+        return currentX + (t.markerSide + 2)
     }
 
     private fun drawRegularPageLabels(canvas: PdfCanvas,
