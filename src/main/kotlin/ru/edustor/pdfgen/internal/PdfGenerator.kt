@@ -112,9 +112,9 @@ open class PdfGenerator {
 
         val xCellsCount = 40
         val horizontalMargin = (pageSize.width - (xCellsCount * cellSide)) / 2
-        val gridStartPoint = Point(horizontalMargin.toDouble(), 20.0)
+        val gridStartPoint = Point(horizontalMargin.toDouble(), 30.0)
 //            Draw grid
-        val gridArea = drawGrid(canvas, gridStartPoint, 40, 56, drawCornell)
+        val gridArea = drawGrid(canvas, gridStartPoint, 40, 55, drawCornell)
 
         val markersArea = Rectangle(gridArea.x, gridArea.y, gridArea.width, gridArea.height + 3)
         drawMarkers(canvas, markersArea)
@@ -152,8 +152,15 @@ open class PdfGenerator {
 
         var currentX = targetArea.x + rowWidth * 0.4
 
-        arrayOf(4, 3, 1).forEach { count ->
-            currentX = drawMetaCells(canvas, currentX, y, count) + 10
+        canvas.setFillColor(Color.BLACK)
+        canvas.rectangle(currentX, y, markerSide, markerSide)
+        canvas.fillStroke()
+
+        arrayOf(3, 1).forEach { count ->
+            currentX += cellSide + 2
+            currentX = drawMetaCells(canvas, currentX, y, count)
+            canvas.rectangle(currentX, y, markerSide, markerSide)
+            canvas.fillStroke()
         }
 
         canvas.restoreState()
