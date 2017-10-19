@@ -16,7 +16,7 @@
     </div>
     <div>
         <label for="course">Course</label>
-        <input name="course" type="text" size="70" value="1 курс МОиАИС ПММ ВГУ">
+        <input name="course" type="text" size="70" value="91 группа, 1 курс МОиАИС ПММ ВГУ">
     </div>
     <div>
         <label for="copyright">Copyright</label>
