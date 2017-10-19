@@ -4,7 +4,6 @@ import com.itextpdf.io.font.PdfEncodings
 import com.itextpdf.kernel.color.Color
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
-import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.geom.Rectangle
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
@@ -17,9 +16,6 @@ import java.io.OutputStream
 open class PdfGenerator {
 
     private val fontBytes = this.javaClass.getResource("/fonts/Proxima Nova Thin.ttf").readBytes()
-    private val pageSize = PageSize.A4
-    private val cellSide = 5 / 25.4f * 72
-    private val markerSide = cellSide.toDouble()
 
     fun makePdf(outputStream: OutputStream,
                 filename: String,
@@ -45,32 +41,33 @@ open class PdfGenerator {
     private fun drawTitlePage(pdfDocument: PdfDocument,
                               proximaNovaFont: PdfFont,
                               p: PdfGenParams) {
-        val page = pdfDocument.addNewPage(pageSize)
+        val t = p.type
+        val page = pdfDocument.addNewPage(t.pageSize)
         val canvas = PdfCanvas(page)
                 .setLineWidth(0.1f)
                 .setStrokeColor(Color.GRAY)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
         val edustorStr = "Edustor Digital"
-        showText(canvas, calculateCenteredTextX(pageSize.width, edustorStr, proximaNovaFont, 18f),
-                pageSize.top - 50.0, edustorStr, proximaNovaFont, 18f)
+        showText(canvas, calculateCenteredTextX(t.pageSize.width, edustorStr, proximaNovaFont, 18f),
+                t.pageSize.top - 50.0, edustorStr, proximaNovaFont, 18f)
 
 
-        showText(canvas, calculateCenteredTextX(pageSize.width, p.courseName, proximaNovaFont, 20f),
-                pageSize.top - 365.0, p.courseName, proximaNovaFont, 20f)
+        showText(canvas, calculateCenteredTextX(t.pageSize.width, p.courseName, proximaNovaFont, 20f),
+                t.pageSize.top - 365.0, p.courseName, proximaNovaFont, 20f)
 
-        showText(canvas, calculateCenteredTextX(pageSize.width, p.subjectName, proximaNovaFont, 30f),
-                pageSize.top - 400.0, p.subjectName, proximaNovaFont, 30f)
+        showText(canvas, calculateCenteredTextX(t.pageSize.width, p.subjectName, proximaNovaFont, 30f),
+                t.pageSize.top - 400.0, p.subjectName, proximaNovaFont, 30f)
 
-        showText(canvas, calculateCenteredTextX(pageSize.width, p.authorName, proximaNovaFont, 18f),
-                pageSize.bottom + 100.0, p.authorName, proximaNovaFont, 18f)
+        showText(canvas, calculateCenteredTextX(t.pageSize.width, p.authorName, proximaNovaFont, 18f),
+                t.pageSize.bottom + 100.0, p.authorName, proximaNovaFont, 18f)
 
-        showText(canvas, calculateCenteredTextX(pageSize.width, p.contactsString, proximaNovaFont, 10f),
-                pageSize.bottom + 80.0, p.contactsString, proximaNovaFont, 10f)
+        showText(canvas, calculateCenteredTextX(t.pageSize.width, p.contactsString, proximaNovaFont, 10f),
+                t.pageSize.bottom + 80.0, p.contactsString, proximaNovaFont, 10f)
 
         val finalCopyrightString = "© ${p.copyrightString} ${p.academicYear}"
-        showText(canvas, calculateCenteredTextX(pageSize.width, finalCopyrightString, proximaNovaFont, 10f),
-                pageSize.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
+        showText(canvas, calculateCenteredTextX(t.pageSize.width, finalCopyrightString, proximaNovaFont, 10f),
+                t.pageSize.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
 
 
     }
@@ -79,21 +76,21 @@ open class PdfGenerator {
                                 proximaNovaFont: PdfFont,
                                 p: PdfGenParams) {
 
-        val page = pdfDocument.addNewPage(pageSize)
+        val page = pdfDocument.addNewPage(p.type.pageSize)
         val canvas = PdfCanvas(page)
 
         val gridArea = drawGrid(canvas, p)
 
         val markersArea = Rectangle(gridArea.x, gridArea.y, gridArea.width, gridArea.height + 3)
-        drawMarkers(canvas, markersArea)
+        drawMarkers(canvas, markersArea, p.type)
 
-        drawMetaFields(canvas, markersArea, proximaNovaFont)
+        drawMetaFields(canvas, markersArea, proximaNovaFont, p.type)
 
         val labelsArea = Rectangle(gridArea.x, gridArea.y - 9, gridArea.width, gridArea.height + 15)
         drawRegularPageLabels(canvas, labelsArea, proximaNovaFont, p)
     }
 
-    private fun drawMarkers(canvas: PdfCanvas, targetArea: Rectangle) {
+    private fun drawMarkers(canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
         canvas.saveState()
 
         val tLeft = targetArea.left.toDouble()
@@ -102,52 +99,49 @@ open class PdfGenerator {
         val tBottom = targetArea.bottom.toDouble()
 
         canvas.setFillColor(Color.BLACK)
-        canvas.rectangle(tLeft, tBottom, markerSide, markerSide)
-        canvas.rectangle(tRight - markerSide, tBottom, markerSide, markerSide)
-        canvas.rectangle(tLeft, tTop, markerSide, markerSide)
-        canvas.rectangle(tRight - markerSide, tTop, markerSide, markerSide)
+        canvas.rectangle(tLeft, tBottom, t.markerSide, t.markerSide)
+        canvas.rectangle(tRight - t.markerSide, tBottom, t.markerSide, t.markerSide)
+        canvas.rectangle(tLeft, tTop, t.markerSide, t.markerSide)
+        canvas.rectangle(tRight - t.markerSide, tTop, t.markerSide, t.markerSide)
         canvas.fillStroke()
 
         canvas.restoreState()
     }
 
-    private fun drawMetaFields(canvas: PdfCanvas, targetArea: Rectangle, proximaNovaFont: PdfFont) {
+    private fun drawMetaFields(canvas: PdfCanvas, targetArea: Rectangle, proximaNovaFont: PdfFont, t: EdustorPdfType) {
         canvas.saveState()
 
         val y = targetArea.top.toDouble()
         val rowWidth = targetArea.width.toDouble()
-        val cellSide = cellSide.toDouble()
 
         var currentX = targetArea.x + rowWidth * 0.4
 
         canvas.setFillColor(Color.BLACK)
-        canvas.rectangle(currentX, y, markerSide, markerSide)
+        canvas.rectangle(currentX, y, t.markerSide, t.markerSide)
         canvas.fillStroke()
 
         arrayOf(3, 1).forEach { count ->
-            currentX += cellSide + 2
-            currentX = drawMetaCells(canvas, currentX, y, count)
-            canvas.rectangle(currentX, y, markerSide, markerSide)
+            currentX += t.markerSide + 2
+            currentX = drawMetaCells(canvas, t, currentX, y, count)
+            canvas.rectangle(currentX, y, t.markerSide, t.markerSide)
             canvas.fillStroke()
         }
 
         canvas.restoreState()
     }
 
-    private fun drawMetaCells(canvas: PdfCanvas, x: Double, y: Double, count: Int): Double {
+    private fun drawMetaCells(canvas: PdfCanvas, t: EdustorPdfType, x: Double, y: Double, count: Int): Double {
         canvas.saveState()
 
         canvas.setLineWidth(0.1f)
                 .setStrokeColor(Color.BLACK)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
-        val cellSide = cellSide.toDouble()
-
         var currentX = x
 
         (1..count).forEach {
-            canvas.rectangle(currentX, y, cellSide, cellSide)
-            currentX += (cellSide + 2)
+            canvas.rectangle(currentX, y, t.markerSide, t.markerSide)
+            currentX += (t.markerSide + 2)
         }
         canvas.stroke()
 
@@ -168,7 +162,7 @@ open class PdfGenerator {
         }
         val topRowY = targetArea.top.toDouble()
         val leftX = when (t.markersEnabled) {
-            true -> targetArea.left + markerSide + 3
+            true -> targetArea.left + t.markerSide + 3
             false -> targetArea.left.toDouble()
 
         }
@@ -185,7 +179,7 @@ open class PdfGenerator {
 
         val rightLabelSize = proximaNovaFont.getWidth(topRightString, t.topFontSize);
         val rightX = when (t.markersEnabled) {
-            true -> targetArea.right - (markerSide + 3) - rightLabelSize
+            true -> targetArea.right - (t.markerSide + 3) - rightLabelSize
             false -> targetArea.right.toDouble() - rightLabelSize
         }
 
@@ -228,7 +222,7 @@ open class PdfGenerator {
                 (t.gridCellSide * t.gridXCells).toFloat(), (t.gridCellSide * t.gridYCells).toFloat())
 
         (0..t.gridXCells)
-                .map { (gridBorders.left + it * cellSide).toDouble() }
+                .map { (gridBorders.left + it * t.gridCellSide) }
                 .forEach {
                     canvas.moveTo(it, gridBorders.top.toDouble())
                             .lineTo(it, gridBorders.bottom.toDouble())
@@ -236,7 +230,7 @@ open class PdfGenerator {
                 }
 
         (0..t.gridYCells)
-                .map { (gridBorders.bottom + it * cellSide).toDouble() }
+                .map { (gridBorders.bottom + it * t.gridCellSide) }
                 .forEach {
                     canvas.moveTo(gridBorders.left.toDouble(), it)
                             .lineTo(gridBorders.right.toDouble(), it)
@@ -248,19 +242,19 @@ open class PdfGenerator {
             canvas.saveState()
                     .setLineWidth(1f)
 
-            val titleLineY = (gridBorders.top - 3 * cellSide).toDouble()
+            val titleLineY = (gridBorders.top - 3 * t.gridCellSide)
             canvas.moveTo(gridBorders.left.toDouble(), titleLineY)
                     .lineTo(gridBorders.right.toDouble(), titleLineY)
                     .stroke()
 
-            val summaryLineY = (gridBorders.bottom + 5 * cellSide).toDouble()
+            val summaryLineY = (gridBorders.bottom + 5 * t.gridCellSide)
             canvas.moveTo(gridBorders.left.toDouble(), summaryLineY)
                     .lineTo(gridBorders.right.toDouble(), summaryLineY)
                     .stroke()
 
-            val notesLineX = (gridBorders.left + 8 * cellSide).toDouble()
+            val notesLineX = (gridBorders.left + 8 * t.gridCellSide)
             canvas.moveTo(notesLineX, gridBorders.top.toDouble())
-                    .lineTo(notesLineX, (gridBorders.bottom + 5 * cellSide).toDouble())
+                    .lineTo(notesLineX, (gridBorders.bottom + 5 * t.gridCellSide))
                     .stroke()
 
             canvas.restoreState()

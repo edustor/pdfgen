@@ -37,7 +37,8 @@ data class EdustorPdfType(
         val gridCellSide: Double,
         val topFontSize: Float,
         val bottomFontSize: Float,
-        val markersEnabled: Boolean
+        val markersEnabled: Boolean,
+        val markerSide: Double
 )
 
 object EdustorPdfTypes {
@@ -51,6 +52,6 @@ object EdustorPdfTypes {
         val gridStartY = 30.0
         return@let EdustorPdfType(title = title, pageSize = pageSize, gridStartX = gridStartX, gridStartY = gridStartY,
                 gridCellSide = gridCellSide, gridXCells = gridXCells, gridYCells = gridYCells,
-                topFontSize = 11f, bottomFontSize = 8f, markersEnabled = true)
+                topFontSize = 11f, bottomFontSize = 8f, markersEnabled = true, markerSide = gridCellSide)
     }
 }
