@@ -81,10 +81,12 @@ open class PdfGenerator {
 
         val gridArea = drawGrid(canvas, p)
 
-        val markersArea = Rectangle(gridArea.x, gridArea.y, gridArea.width, gridArea.height + 3)
-        drawMarkers(canvas, markersArea, p.type)
+        if (p.type.markersEnabled) {
+            val markersArea = Rectangle(gridArea.x, gridArea.y, gridArea.width, gridArea.height + 3)
+            drawMarkers(canvas, markersArea, p.type)
 
-        drawMetaFields(canvas, markersArea, proximaNovaFont, p.type)
+            drawMetaFields(canvas, markersArea, proximaNovaFont, p.type)
+        }
 
         val labelsArea = Rectangle(gridArea.x, gridArea.y - 9, gridArea.width, gridArea.height + 15)
         drawRegularPageLabels(canvas, labelsArea, proximaNovaFont, p)
