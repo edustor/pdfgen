@@ -79,7 +79,7 @@ object EdustorPdfTypes {
                     title = "Edustor Digital",
                     pageSize = pageSize,
                     gridStartX = gridStartX,
-                    gridStartY = 20.0,
+                    gridStartY = 23.0,
                     gridCellSide = gridCellSide,
                     gridXCells = gridXCells,
                     gridYCells = 56,
