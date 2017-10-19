@@ -1,5 +1,6 @@
 package ru.edustor.pdfgen.controller
 
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -14,6 +15,7 @@ import java.io.ByteArrayOutputStream
 
 @Controller
 class RootController(private val pdfGenerator: PdfGenerator) {
+
     @RequestMapping("/")
     fun root(): String {
         return "index"
@@ -29,9 +31,9 @@ class RootController(private val pdfGenerator: PdfGenerator) {
             @RequestParam pagesCount: Int,
             @RequestParam(defaultValue = "false") cornell: Boolean,
             @RequestParam(defaultValue = "false") generateTitle: Boolean): HttpEntity<ByteArray> {
-        val (filename, type) = when {
-            subject != "" -> "$subject.pdf" to EdustorPdfTypes.DIGITAL
-            else -> "edustor-paper.pdf" to EdustorPdfTypes.PAPER
+        val (filename, type, contentDispositionEnabled) = when {
+            subject != "" -> Triple("$subject.pdf", EdustorPdfTypes.DIGITAL, true)
+            else -> Triple("edustor-paper.pdf", EdustorPdfTypes.PAPER, false)
         }
 
         val byteArrayOutputStream = ByteArrayOutputStream()
@@ -41,7 +43,9 @@ class RootController(private val pdfGenerator: PdfGenerator) {
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
-//        headers.setContentDispositionFormData("file", filename, Charsets.UTF_8)
+        if (contentDispositionEnabled) {
+            headers.setContentDispositionFormData("file", filename, Charsets.UTF_8)
+        }
 
         return HttpEntity(byteArrayOutputStream.toByteArray(), headers)
 
