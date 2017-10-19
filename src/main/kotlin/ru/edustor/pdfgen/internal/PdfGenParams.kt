@@ -37,48 +37,53 @@ data class EdustorPdfType(
         val gridCellSide: Double,
         val topFontSize: Float,
         val bottomFontSize: Float,
+        val bottomLabelMargin: Double,
         val markersEnabled: Boolean,
         val markerSide: Double
 )
 
 object EdustorPdfTypes {
-    val PAPER = let {
-        val pageSize = PageSize.A4
-        val gridXCells = 40
-        val gridCellSide = 5 / 25.4 * 72
-        val gridStartX = (pageSize.width - (gridXCells * gridCellSide)) / 2.0
-        return@let EdustorPdfType(
-                title = "Edustor Paper",
-                pageSize = pageSize,
-                gridStartX = gridStartX,
-                gridStartY = 30.0,
-                gridCellSide = gridCellSide,
-                gridXCells = gridXCells,
-                gridYCells = 55,
-                topFontSize = 11f,
-                bottomFontSize = 8f,
-                markersEnabled = true,
-                markerSide = gridCellSide
-        )
-    }
+    val PAPER: EdustorPdfType
+        get() {
+            val pageSize = PageSize.A4
+            val gridXCells = 40
+            val gridCellSide = 5 / 25.4 * 72
+            val gridStartX = (pageSize.width - (gridXCells * gridCellSide)) / 2.0
+            return EdustorPdfType(
+                    title = "Edustor Paper",
+                    pageSize = pageSize,
+                    gridStartX = gridStartX,
+                    gridStartY = 32.0,
+                    gridCellSide = gridCellSide,
+                    gridXCells = gridXCells,
+                    gridYCells = 55,
+                    topFontSize = 11f,
+                    bottomFontSize = 8f,
+                    bottomLabelMargin = 3.0,
+                    markersEnabled = true,
+                    markerSide = gridCellSide
+            )
+        }
 
-    val DIGITAL = let {
-        val pageSize = PageSize.A4
-        val gridXCells = 40
-        val gridCellSide = 5 / 25.4 * 72
-        val gridStartX = (pageSize.width - (gridXCells * gridCellSide)) / 2.0
-        return@let EdustorPdfType(
-                title = "Edustor Digital",
-                pageSize = pageSize,
-                gridStartX = gridStartX,
-                gridStartY = 20.0,
-                gridCellSide = gridCellSide,
-                gridXCells = gridXCells,
-                gridYCells = 56,
-                topFontSize = 11f,
-                bottomFontSize = 8f,
-                markersEnabled = false,
-                markerSide = gridCellSide
-        )
-    }
+    val DIGITAL: EdustorPdfType
+        get() {
+            val pageSize = PageSize.A4
+            val gridXCells = 40
+            val gridCellSide = 5 / 25.4 * 72
+            val gridStartX = (pageSize.width - (gridXCells * gridCellSide)) / 2.0
+            return EdustorPdfType(
+                    title = "Edustor Digital",
+                    pageSize = pageSize,
+                    gridStartX = gridStartX,
+                    gridStartY = 20.0,
+                    gridCellSide = gridCellSide,
+                    gridXCells = gridXCells,
+                    gridYCells = 56,
+                    topFontSize = 11f,
+                    bottomFontSize = 8f,
+                    bottomLabelMargin = 0.0,
+                    markersEnabled = false,
+                    markerSide = gridCellSide
+            )
+        }
 }

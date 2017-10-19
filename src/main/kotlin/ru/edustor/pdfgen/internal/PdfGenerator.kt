@@ -82,7 +82,8 @@ open class PdfGenerator {
         val gridArea = drawGrid(canvas, p)
 
         if (p.type.markersEnabled) {
-            val markersArea = Rectangle(gridArea.x, gridArea.y, gridArea.width, gridArea.height + 3)
+            val markersArea = Rectangle(gridArea.x, gridArea.y - p.type.markerSide.toFloat() - 3,
+                    gridArea.width, gridArea.height + p.type.markerSide.toFloat() + 6)
             drawMarkers(canvas, markersArea, p.type)
 
             drawMetaFields(canvas, markersArea, proximaNovaFont, p.type)
@@ -179,29 +180,33 @@ open class PdfGenerator {
             else -> p.courseName
         }
 
-        val rightLabelSize = proximaNovaFont.getWidth(topRightString, t.topFontSize);
-        val rightX = when (t.markersEnabled) {
-            true -> targetArea.right - (t.markerSide + 3) - rightLabelSize
-            false -> targetArea.right.toDouble() - rightLabelSize
+        val topRightLabelSize = proximaNovaFont.getWidth(topRightString, t.topFontSize);
+        val topRightX = when (t.markersEnabled) {
+            true -> targetArea.right - (t.markerSide + 3) - topRightLabelSize
+            false -> targetArea.right.toDouble() - topRightLabelSize
         }
 
         canvas.beginText()
-                .moveText(rightX, topRowY)
+                .moveText(topRightX, topRowY)
                 .showText(topRightString)
                 .endText()
 
         canvas.setFontAndSize(proximaNovaFont, t.bottomFontSize)
 
 //            Print bottom row
-        val bottomRowY = targetArea.bottom.toDouble()
+        val bottomRowY = targetArea.bottom - t.bottomLabelMargin
         canvas.beginText()
-                .moveText(targetArea.left.toDouble(), bottomRowY)
+                .moveText(leftX, bottomRowY)
                 .showText("© ${p.copyrightString} ${p.academicYear}")
                 .endText()
 
+        val bottomRightLabelSize = proximaNovaFont.getWidth(p.contactsString, t.bottomFontSize)
+        val bottomRightX = when (t.markersEnabled) {
+            true -> targetArea.right - (t.markerSide + 3) - bottomRightLabelSize
+            false -> targetArea.right.toDouble() - bottomRightLabelSize
+        }
         canvas.beginText()
-                .moveText(targetArea.right.toDouble() - proximaNovaFont.getWidth(p.contactsString, t.bottomFontSize),
-                        bottomRowY)
+                .moveText(bottomRightX, bottomRowY)
                 .showText(p.contactsString)
                 .endText()
     }
