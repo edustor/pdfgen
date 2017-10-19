@@ -20,7 +20,9 @@ import java.time.ZoneId
 open class PdfGenerator {
 
     private val fontBytes = this.javaClass.getResource("/fonts/Proxima Nova Thin.ttf").readBytes()
-    private val PAGE_SIZE = PageSize.A4
+    private val pageSize = PageSize.A4
+    private val cellSide = 5 / 25.4f * 72
+    private val markerSide = 10.0
 
     fun makePdf(outputStream: OutputStream,
                 filename: String,
@@ -64,32 +66,32 @@ open class PdfGenerator {
                               copyrightString: String,
                               contactsString: String,
                               academicYear: String) {
-        val page = pdfDocument.addNewPage(PAGE_SIZE)
+        val page = pdfDocument.addNewPage(pageSize)
         val canvas = PdfCanvas(page)
                 .setLineWidth(0.1f)
                 .setStrokeColor(Color.GRAY)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
         val edustorStr = "Edustor Digital"
-        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, edustorStr, proximaNovaFont, 18f),
-                PAGE_SIZE.top - 50.0, edustorStr, proximaNovaFont, 18f)
+        showText(canvas, calculateCenteredTextX(pageSize.width, edustorStr, proximaNovaFont, 18f),
+                pageSize.top - 50.0, edustorStr, proximaNovaFont, 18f)
 
 
-        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, courseName, proximaNovaFont, 20f),
-                PAGE_SIZE.top - 365.0, courseName, proximaNovaFont, 20f)
+        showText(canvas, calculateCenteredTextX(pageSize.width, courseName, proximaNovaFont, 20f),
+                pageSize.top - 365.0, courseName, proximaNovaFont, 20f)
 
-        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, subjectName, proximaNovaFont, 30f),
-                PAGE_SIZE.top - 400.0, subjectName, proximaNovaFont, 30f)
+        showText(canvas, calculateCenteredTextX(pageSize.width, subjectName, proximaNovaFont, 30f),
+                pageSize.top - 400.0, subjectName, proximaNovaFont, 30f)
 
-        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, authorName, proximaNovaFont, 18f),
-                PAGE_SIZE.bottom + 100.0, authorName, proximaNovaFont, 18f)
+        showText(canvas, calculateCenteredTextX(pageSize.width, authorName, proximaNovaFont, 18f),
+                pageSize.bottom + 100.0, authorName, proximaNovaFont, 18f)
 
-        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, contactsString, proximaNovaFont, 10f),
-                PAGE_SIZE.bottom + 80.0, contactsString, proximaNovaFont, 10f)
+        showText(canvas, calculateCenteredTextX(pageSize.width, contactsString, proximaNovaFont, 10f),
+                pageSize.bottom + 80.0, contactsString, proximaNovaFont, 10f)
 
         val finalCopyrightString = "© $copyrightString $academicYear"
-        showText(canvas, calculateCenteredTextX(PAGE_SIZE.width, finalCopyrightString, proximaNovaFont, 10f),
-                PAGE_SIZE.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
+        showText(canvas, calculateCenteredTextX(pageSize.width, finalCopyrightString, proximaNovaFont, 10f),
+                pageSize.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
 
 
     }
@@ -104,18 +106,51 @@ open class PdfGenerator {
                                 academicYear: String,
                                 drawCornell: Boolean = true) {
 
-        val page = pdfDocument.addNewPage(PAGE_SIZE)
+        val page = pdfDocument.addNewPage(pageSize)
         val canvas = PdfCanvas(page)
-                .setLineWidth(0.1f)
-                .setStrokeColor(Color.GRAY)
-                .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
-
-        val TOP_FONT_SIZE = 11f
-        val BOTTOM_FONT_SIZE = 8f
-        val CELL_SIDE = 5 / 25.4f * 72
 
 //            Draw grid
-        val gridArea = drawGrid(canvas, PAGE_SIZE, CELL_SIDE, 40, 56, drawCornell)
+        val gridArea = drawGrid(canvas, pageSize, 40, 56, drawCornell)
+
+        val markersArea = Rectangle(gridArea.x, (gridArea.y - markerSide - 3).toFloat(), gridArea.width, (gridArea.height + markerSide + 6).toFloat())
+        drawMarkers(canvas, markersArea)
+
+        val labelsArea = Rectangle((gridArea.x + markerSide + 3).toFloat(), gridArea.y - 11, (gridArea.width - (markerSide + 3) * 2).toFloat(), gridArea.height + 15)
+        drawRegularPageLabels(canvas, labelsArea, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear)
+    }
+
+    private fun drawMarkers(canvas: PdfCanvas, targetArea: Rectangle) {
+        canvas.saveState()
+
+        val tLeft = targetArea.left.toDouble()
+        val tRight = targetArea.right.toDouble()
+        val tTop = targetArea.top.toDouble()
+        val tBottom = targetArea.bottom.toDouble()
+
+        canvas.setFillColor(Color.BLACK)
+        canvas.rectangle(tLeft, tBottom, markerSide, markerSide)
+        canvas.rectangle(tRight - markerSide, tBottom, markerSide, markerSide)
+        canvas.rectangle(tLeft, tTop, markerSide, markerSide)
+        canvas.rectangle(tRight - markerSide, tTop, markerSide, markerSide)
+        canvas.fillStroke()
+
+        canvas.restoreState()
+    }
+
+    private fun drawRegularPageLabels(canvas: PdfCanvas,
+                                      targetArea: Rectangle,
+                                      proximaNovaFont: PdfFont,
+                                      authorName: String,
+                                      subjectName: String,
+                                      courseName: String,
+                                      copyrightString: String,
+                                      contactsString: String,
+                                      academicYear: String) {
+        val TOP_FONT_SIZE = 11f
+        val BOTTOM_FONT_SIZE = 8f
+
+        canvas.rectangle(targetArea)
+
 
 //            Print top row
         val edustorStr = when {
@@ -127,10 +162,10 @@ open class PdfGenerator {
             authorName != "" -> "$edustorStr: $authorName"
             else -> edustorStr
         }
-        val topRowY = gridArea.top.toDouble() + 3
+        val topRowY = targetArea.top.toDouble()
         canvas.beginText()
                 .setFontAndSize(proximaNovaFont, TOP_FONT_SIZE)
-                .moveText(gridArea.left.toDouble(), topRowY)
+                .moveText(targetArea.left.toDouble(), topRowY)
                 .showText(titleRow)
                 .endText()
 
@@ -140,7 +175,7 @@ open class PdfGenerator {
         }
 
         canvas.beginText()
-                .moveText(gridArea.right.toDouble() - proximaNovaFont.getWidth(topRightString, TOP_FONT_SIZE),
+                .moveText(targetArea.right.toDouble() - proximaNovaFont.getWidth(topRightString, TOP_FONT_SIZE),
                         topRowY)
                 .showText(topRightString)
                 .endText()
@@ -148,14 +183,14 @@ open class PdfGenerator {
         canvas.setFontAndSize(proximaNovaFont, BOTTOM_FONT_SIZE)
 
 //            Print bottom row
-        val bottomRowY = gridArea.bottom.toDouble() - 9
+        val bottomRowY = targetArea.bottom.toDouble()
         canvas.beginText()
-                .moveText(gridArea.left.toDouble(), bottomRowY)
+                .moveText(targetArea.left.toDouble(), bottomRowY)
                 .showText("© $copyrightString $academicYear")
                 .endText()
 
         canvas.beginText()
-                .moveText(gridArea.right.toDouble() - proximaNovaFont.getWidth(contactsString, BOTTOM_FONT_SIZE),
+                .moveText(targetArea.right.toDouble() - proximaNovaFont.getWidth(contactsString, BOTTOM_FONT_SIZE),
                         bottomRowY)
                 .showText(contactsString)
                 .endText()
@@ -165,13 +200,18 @@ open class PdfGenerator {
      * Draws grid on canvas
      * @param canvas Target canvas
      * @param pageSize Page size used to calculate margins
-     * @param cellSide Cell side length, in pt
      * @return Grid borders rectangle
      */
-    private fun drawGrid(canvas: PdfCanvas, pageSize: Rectangle, cellSide: Float,
+    private fun drawGrid(canvas: PdfCanvas, targetArea: Rectangle,
                          xCells: Int, yCells: Int, drawCornell: Boolean): Rectangle {
-        val xMargin = (pageSize.width - (xCells * cellSide)) / 2
-        val yMargin = (pageSize.height - (yCells * cellSide)) / 2
+        canvas
+                .saveState()
+                .setLineWidth(0.1f)
+                .setStrokeColor(Color.GRAY)
+                .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
+
+        val xMargin = (targetArea.width - (xCells * cellSide)) / 2
+        val yMargin = (targetArea.height - (yCells * cellSide)) / 2
         if (xMargin < 0 || yMargin < 0) {
             throw IllegalArgumentException("Can't fit ${xCells}x$yCells grid to specified page size")
         }
@@ -216,6 +256,7 @@ open class PdfGenerator {
 
             canvas.restoreState()
         }
+        canvas.restoreState()
         return gridBorders
     }
 
