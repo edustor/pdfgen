@@ -5,6 +5,7 @@ import com.itextpdf.kernel.color.Color
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.kernel.geom.Point
 import com.itextpdf.kernel.geom.Rectangle
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
@@ -109,12 +110,17 @@ open class PdfGenerator {
         val page = pdfDocument.addNewPage(pageSize)
         val canvas = PdfCanvas(page)
 
+        val xCellsCount = 40
+        val horizontalMargin = (pageSize.width - (xCellsCount * cellSide)) / 2
+        val gridStartPoint = Point(horizontalMargin.toDouble(), 20.0)
 //            Draw grid
-        val gridArea = drawGrid(canvas, pageSize, 40, 56, drawCornell)
-        drawMarkers(canvas, gridArea)
+        val gridArea = drawGrid(canvas, gridStartPoint, 40, 56, drawCornell)
 
-        val labelsArea = Rectangle(gridArea.x, gridArea.y - 11, gridArea.width, gridArea.height + 15)
-        drawRegularPageLabels(canvas, labelsArea, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear)
+        val markersArea = Rectangle(gridArea.x, gridArea.y, gridArea.width,gridArea.height + 3)
+        drawMarkers(canvas, markersArea)
+
+        val labelsArea = Rectangle(gridArea.x, gridArea.y - 9, gridArea.width, gridArea.height + 15)
+        drawRegularPageLabels(canvas, labelsArea, true, proximaNovaFont, authorName, subjectName, courseName, copyrightString, contactsString, academicYear)
     }
 
     private fun drawMarkers(canvas: PdfCanvas, targetArea: Rectangle) {
@@ -128,8 +134,8 @@ open class PdfGenerator {
         canvas.setFillColor(Color.BLACK)
         canvas.rectangle(tLeft, tBottom, markerSide, markerSide)
         canvas.rectangle(tRight - markerSide, tBottom, markerSide, markerSide)
-        canvas.rectangle(tLeft, tTop - markerSide, markerSide, markerSide)
-        canvas.rectangle(tRight - markerSide, tTop - markerSide, markerSide, markerSide)
+        canvas.rectangle(tLeft, tTop, markerSide, markerSide)
+        canvas.rectangle(tRight - markerSide, tTop, markerSide, markerSide)
         canvas.fillStroke()
 
         canvas.restoreState()
@@ -137,6 +143,7 @@ open class PdfGenerator {
 
     private fun drawRegularPageLabels(canvas: PdfCanvas,
                                       targetArea: Rectangle,
+                                      reserveSpaceForMarkers: Boolean,
                                       proximaNovaFont: PdfFont,
                                       authorName: String,
                                       subjectName: String,
@@ -158,9 +165,14 @@ open class PdfGenerator {
             else -> edustorStr
         }
         val topRowY = targetArea.top.toDouble()
+        val leftX = when (reserveSpaceForMarkers) {
+            true -> targetArea.left + markerSide + 3
+            false -> targetArea.left.toDouble()
+
+        }
         canvas.beginText()
                 .setFontAndSize(proximaNovaFont, TOP_FONT_SIZE)
-                .moveText(targetArea.left.toDouble(), topRowY)
+                .moveText(leftX, topRowY)
                 .showText(titleRow)
                 .endText()
 
@@ -169,9 +181,14 @@ open class PdfGenerator {
             else -> courseName
         }
 
+        val rightLabelSize = proximaNovaFont.getWidth(topRightString, TOP_FONT_SIZE);
+        val rightX = when (reserveSpaceForMarkers) {
+            true -> targetArea.right - (markerSide + 3) - rightLabelSize
+            false -> targetArea.right.toDouble() - rightLabelSize
+        }
+
         canvas.beginText()
-                .moveText(targetArea.right.toDouble() - proximaNovaFont.getWidth(topRightString, TOP_FONT_SIZE),
-                        topRowY)
+                .moveText(rightX, topRowY)
                 .showText(topRightString)
                 .endText()
 
@@ -197,7 +214,7 @@ open class PdfGenerator {
      * @param pageSize Page size used to calculate margins
      * @return Grid borders rectangle
      */
-    private fun drawGrid(canvas: PdfCanvas, targetArea: Rectangle,
+    private fun drawGrid(canvas: PdfCanvas, startPoint: Point,
                          xCells: Int, yCells: Int, drawCornell: Boolean): Rectangle {
         canvas
                 .saveState()
@@ -205,13 +222,7 @@ open class PdfGenerator {
                 .setStrokeColor(Color.GRAY)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
-        val xMargin = (targetArea.width - (xCells * cellSide)) / 2
-        val yMargin = (targetArea.height - (yCells * cellSide)) / 2
-        if (xMargin < 0 || yMargin < 0) {
-            throw IllegalArgumentException("Can't fit ${xCells}x$yCells grid to specified page size")
-        }
-
-        val gridBorders = Rectangle(xMargin, yMargin, cellSide * xCells, cellSide * yCells)
+        val gridBorders = Rectangle(startPoint.x.toFloat(), startPoint.y.toFloat(), cellSide * xCells, cellSide * yCells)
 
         (0..xCells)
                 .map { (gridBorders.left + it * cellSide).toDouble() }
