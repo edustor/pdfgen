@@ -82,11 +82,9 @@ open class PdfGenerator {
         val gridArea = drawGrid(canvas, p)
 
         if (p.type.markersEnabled) {
-            val markersArea = Rectangle(gridArea.x, gridArea.y - p.type.markerSide.toFloat() - 3,
-                    gridArea.width, gridArea.height + p.type.markerSide.toFloat() + 6)
-            drawMarkers(canvas, markersArea, p.type)
+            drawMarkers(canvas, gridArea, p.type)
 
-            drawMetaFields(canvas, markersArea, proximaNovaFont, p.type)
+            drawMetaFields(canvas, gridArea, proximaNovaFont, p.type)
         }
 
         val labelsArea = Rectangle(gridArea.x, gridArea.y - 9, gridArea.width, gridArea.height + 15)
@@ -104,44 +102,32 @@ open class PdfGenerator {
         canvas.setFillColor(Color.BLACK)
         canvas.rectangle(tLeft, tBottom, t.markerSide, t.markerSide)
         canvas.rectangle(tRight - t.markerSide, tBottom, t.markerSide, t.markerSide)
-        canvas.rectangle(tLeft, tTop, t.markerSide, t.markerSide)
-        canvas.rectangle(tRight - t.markerSide, tTop, t.markerSide, t.markerSide)
+        canvas.rectangle(tLeft, tTop - t.markerSide, t.markerSide, t.markerSide)
+        canvas.rectangle(tRight - t.markerSide, tTop - t.markerSide, t.markerSide, t.markerSide)
         canvas.fillStroke()
 
         canvas.restoreState()
     }
 
     private fun drawMetaFields(canvas: PdfCanvas, targetArea: Rectangle, proximaNovaFont: PdfFont, t: EdustorPdfType) {
-        val y = targetArea.top.toDouble()
+        val width = t.metaWidth * t.gridCellSide
+        val height = t.metaHeight * t.gridCellSide
 
-        val cellConfig = arrayOf(4, 4, 2)
-        val width = cellConfig.sum() * (t.markerSide + t.metaCellPadding) + (cellConfig.size - 1) * t.metaCellGroupPadding - t.metaCellPadding
-
-        var currentX = (targetArea.width - width) / 2
-
-        cellConfig.forEach { count ->
-            currentX = drawMetaCells(canvas, t, currentX, y, count)
-        }
-    }
-
-    private fun drawMetaCells(canvas: PdfCanvas, t: EdustorPdfType, x: Double, y: Double, count: Int): Double {
         canvas.saveState()
-
-        canvas.setLineWidth(0.5f)
+                .setLineWidth(0.5f)
                 .setStrokeColor(Color.BLACK)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
-        var currentX = x
+                .moveTo(targetArea.right - width, targetArea.top - height)
+                .lineTo(targetArea.right - width, targetArea.top.toDouble())
 
-        (1..count).forEach {
-            canvas.rectangle(currentX, y, t.markerSide, t.markerSide)
-            currentX += (t.markerSide + t.metaCellPadding)
-        }
-        canvas.stroke()
+                .moveTo(targetArea.right - width, targetArea.top - height)
+                .lineTo(targetArea.right.toDouble(), targetArea.top - height)
 
-        canvas.restoreState()
-        return currentX + t.metaCellGroupPadding
+                .stroke()
+                .restoreState()
     }
+
 
     private fun drawRegularPageLabels(canvas: PdfCanvas,
                                       targetArea: Rectangle,
@@ -155,11 +141,7 @@ open class PdfGenerator {
             else -> t.title
         }
         val topRowY = targetArea.top.toDouble()
-        val leftX = when (t.markersEnabled) {
-            true -> targetArea.left + t.markerSide + 3
-            false -> targetArea.left.toDouble()
-
-        }
+        val leftX = targetArea.left.toDouble()
         canvas.beginText()
                 .setFontAndSize(proximaNovaFont, t.topFontSize)
                 .moveText(leftX, topRowY)
@@ -171,11 +153,8 @@ open class PdfGenerator {
             else -> p.courseName
         }
 
-        val topRightLabelSize = proximaNovaFont.getWidth(topRightString, t.topFontSize);
-        val topRightX = when (t.markersEnabled) {
-            true -> targetArea.right - (t.markerSide + 3) - topRightLabelSize
-            false -> targetArea.right.toDouble() - topRightLabelSize
-        }
+        val topRightLabelSize = proximaNovaFont.getWidth(topRightString, t.topFontSize)
+        val topRightX = targetArea.right.toDouble() - topRightLabelSize
 
         canvas.beginText()
                 .moveText(topRightX, topRowY)

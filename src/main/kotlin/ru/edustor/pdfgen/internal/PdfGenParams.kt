@@ -40,8 +40,8 @@ data class EdustorPdfType(
         val bottomLabelMargin: Double,
         val markersEnabled: Boolean = false,
         val markerSide: Double = 0.0,
-        val metaCellPadding: Double = 0.0,
-        val metaCellGroupPadding: Double = 0.0
+        val metaWidth: Int = 4,
+        val metaHeight: Int = 3
 )
 
 object EdustorPdfTypes {
@@ -55,17 +55,15 @@ object EdustorPdfTypes {
                     title = "Edustor Paper",
                     pageSize = pageSize,
                     gridStartX = gridStartX,
-                    gridStartY = 32.0,
+                    gridStartY = 23.0,
                     gridCellSide = gridCellSide,
                     gridXCells = gridXCells,
-                    gridYCells = 55,
+                    gridYCells = 56,
                     topFontSize = 11f,
                     bottomFontSize = 8f,
-                    bottomLabelMargin = 3.0,
+                    bottomLabelMargin = 0.0,
                     markersEnabled = true,
-                    markerSide = gridCellSide,
-                    metaCellPadding = 2.0,
-                    metaCellGroupPadding = 5.0
+                    markerSide = gridCellSide
             )
         }
 
