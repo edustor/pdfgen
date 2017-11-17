@@ -84,7 +84,7 @@ open class PdfGenerator {
         if (p.type.markersEnabled) {
             drawMarkers(canvas, gridArea, p.type)
 
-            drawMetaFields(canvas, gridArea, proximaNovaFont, p.type)
+//            drawMetaFields(canvas, gridArea, proximaNovaFont, p.type)
         }
 
         val labelsArea = Rectangle(gridArea.x, gridArea.y - 9, gridArea.width, gridArea.height + 15)
