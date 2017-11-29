@@ -15,8 +15,9 @@ data class PdfGenParams(
         val copyrightString: String,
         val contactsString: String,
         val drawCornell: Boolean = true,
-        val generateTitle: Boolean = true
-) {
+        val generateTitle: Boolean = true,
+        val markersEnabled: Boolean = false
+        ) {
     val academicYear: String = let {
         val now = LocalDateTime.now(ZoneId.of("Europe/Moscow")).withNano(0)
         val academicYear = when {
@@ -38,7 +39,6 @@ data class EdustorPdfType(
         val topFontSize: Float,
         val bottomFontSize: Float,
         val bottomLabelMargin: Double,
-        val markersEnabled: Boolean = false,
         val markerSide: Double = 0.0,
         val metaWidth: Int = 4,
         val metaHeight: Int = 3
@@ -62,7 +62,6 @@ object EdustorPdfTypes {
                     topFontSize = 11f,
                     bottomFontSize = 8f,
                     bottomLabelMargin = 0.0,
-                    markersEnabled = true,
                     markerSide = gridCellSide
             )
         }

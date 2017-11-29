@@ -81,7 +81,7 @@ open class PdfGenerator {
 
         val gridArea = drawGrid(canvas, p)
 
-        if (p.type.markersEnabled) {
+        if (p.markersEnabled) {
             drawMarkers(canvas, gridArea, p.type)
 
 //            drawMetaFields(canvas, gridArea, proximaNovaFont, p.type)
@@ -171,7 +171,7 @@ open class PdfGenerator {
                 .endText()
 
         val bottomRightLabelSize = proximaNovaFont.getWidth(p.contactsString, t.bottomFontSize)
-        val bottomRightX = when (t.markersEnabled) {
+        val bottomRightX = when (p.markersEnabled) {
             true -> targetArea.right - (t.markerSide + 3) - bottomRightLabelSize
             false -> targetArea.right.toDouble() - bottomRightLabelSize
         }
