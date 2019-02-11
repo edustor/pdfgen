@@ -16,15 +16,15 @@
     </div>
     <div>
         <label for="course">Course</label>
-        <input name="course" type="text" size="70" value="91 группа, 1 курс МОиАИС ПММ ВГУ">
+        <input name="course" type="text" size="70">
     </div>
     <div>
         <label for="copyright">Copyright</label>
-        <input name="copyright" type="text" size="70" value="VSU University, Dmitry Romanov">
+        <input name="copyright" type="text" size="70" value="Dmitry Romanov">
     </div>
     <div>
         <label for="contacts">Contacts</label>
-        <input name="contacts" type="text" size="70" value="wutiarn.com | vsu@wutiarn.com | @wutiarn on Telegram, Twitter, VK, FB, GitHub and Habrahabr">
+        <input name="contacts" type="text" size="70" value="wtrn.ru | me@wtrn.ru | @wutiarn on Telegram, Twitter, VK, FB, GitHub and Habrahabr">
     </div>
     <div>
         <label for="pagesCount">Regular pages count</label>
