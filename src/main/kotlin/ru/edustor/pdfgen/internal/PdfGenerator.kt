@@ -85,11 +85,10 @@ open class PdfGenerator {
 
         val gridArea = drawGrid(canvas, p)
 
-        if (p.markersEnabled) {
+        if (p.type == EdustorPdfTypes.PAPER) {
 //            drawMarkers(canvas, gridArea, p.type)
             drawQR(index, canvas, gridArea, p.type)
-
-            drawMetaFields(canvas, gridArea, proximaNovaFont, p.type)
+            drawMetaFieldsMarkup(canvas, gridArea, proximaNovaFont, p.type)
         }
 
         val labelsArea = Rectangle(gridArea.x, gridArea.y - 9, gridArea.width, gridArea.height + 15)
@@ -124,21 +123,19 @@ open class PdfGenerator {
         canvas.addImage(qrPdfImage, qrLocation, true)
     }
 
-    private fun drawMetaFields(canvas: PdfCanvas, targetArea: Rectangle, proximaNovaFont: PdfFont, t: EdustorPdfType) {
+    private fun drawMetaFieldsMarkup(canvas: PdfCanvas, targetArea: Rectangle, proximaNovaFont: PdfFont, t: EdustorPdfType) {
         val width = t.metaWidth * t.gridCellSide
         val height = t.metaHeight * t.gridCellSide
 
         canvas.saveState()
-                .setLineWidth(0.5f)
+                .setLineWidth(0.2f)
                 .setStrokeColor(Color.BLACK)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
-
-                .moveTo(targetArea.right - width, targetArea.top - height)
-                .lineTo(targetArea.right - width, targetArea.top.toDouble())
-
-                .moveTo(targetArea.right - width, targetArea.top - height)
+                .moveTo(targetArea.right - width, targetArea.top.toDouble())
+                .lineTo(targetArea.right - width, targetArea.top - height)
                 .lineTo(targetArea.right.toDouble(), targetArea.top - height)
-
+                .lineTo(targetArea.right.toDouble(), targetArea.top.toDouble())
+                .lineTo(targetArea.right - width, targetArea.top.toDouble())
                 .stroke()
                 .restoreState()
     }
