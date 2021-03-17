@@ -34,8 +34,8 @@ open class PdfGenerator {
             drawTitlePage(pdfDocument, proximaNovaFont, p)
         }
 
-        (1..p.pageCount).forEach {
-            drawRegularPage(pdfDocument, proximaNovaFont, p)
+        (1..p.pageCount).forEach { index ->
+            drawRegularPage(index, pdfDocument, proximaNovaFont, p)
         }
 
         pdfDocument.close()
@@ -75,7 +75,8 @@ open class PdfGenerator {
 
     }
 
-    private fun drawRegularPage(pdfDocument: PdfDocument,
+    private fun drawRegularPage(index: Int,
+                                pdfDocument: PdfDocument,
                                 proximaNovaFont: PdfFont,
                                 p: PdfGenParams) {
 
@@ -86,7 +87,7 @@ open class PdfGenerator {
 
         if (p.markersEnabled) {
 //            drawMarkers(canvas, gridArea, p.type)
-            drawQR(canvas, gridArea, p.type)
+            drawQR(index, canvas, gridArea, p.type)
 
             drawMetaFields(canvas, gridArea, proximaNovaFont, p.type)
         }
@@ -113,8 +114,10 @@ open class PdfGenerator {
         canvas.restoreState()
     }
 
-    private fun drawQR(canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
-        val qr = QrUtils.makeQR("https://e.wtrn.ru/p/helloworld")
+    private fun drawQR(index: Int, canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
+        val pageId = EdustorId.generate(index = index)
+        val url = "https://e.wtrn.ru/p/$pageId"
+        val qr = QrUtils.makeQR(url)
         val qrPdfImage = ImageDataFactory.create(qr.getAsByteArray())
         val qrSide = (2 * t.gridCellSide).toFloat()
         val qrLocation = Rectangle(targetArea.right - qrSide, targetArea.y, qrSide, qrSide)
