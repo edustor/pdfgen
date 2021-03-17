@@ -1,6 +1,7 @@
 package ru.edustor.pdfgen.internal
 
 import com.itextpdf.io.font.PdfEncodings
+import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.color.Color
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
@@ -10,6 +11,8 @@ import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas
 import com.itextpdf.kernel.pdf.canvas.PdfCanvasConstants
 import org.springframework.stereotype.Component
+import ru.edustor.pdfgen.utils.QrUtils
+import ru.edustor.pdfgen.utils.QrUtils.getAsByteArray
 import java.io.OutputStream
 
 @Component
@@ -82,9 +85,10 @@ open class PdfGenerator {
         val gridArea = drawGrid(canvas, p)
 
         if (p.markersEnabled) {
-            drawMarkers(canvas, gridArea, p.type)
+//            drawMarkers(canvas, gridArea, p.type)
+            drawQR(canvas, gridArea, p.type)
 
-//            drawMetaFields(canvas, gridArea, proximaNovaFont, p.type)
+            drawMetaFields(canvas, gridArea, proximaNovaFont, p.type)
         }
 
         val labelsArea = Rectangle(gridArea.x, gridArea.y - 9, gridArea.width, gridArea.height + 15)
@@ -107,6 +111,14 @@ open class PdfGenerator {
         canvas.fillStroke()
 
         canvas.restoreState()
+    }
+
+    private fun drawQR(canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
+        val qr = QrUtils.makeQR("https://e.wtrn.ru/p/helloworld")
+        val qrPdfImage = ImageDataFactory.create(qr.getAsByteArray())
+        val qrSide = (2 * t.gridCellSide).toFloat()
+        val qrLocation = Rectangle(targetArea.right - qrSide, targetArea.y, qrSide, qrSide)
+        canvas.addImage(qrPdfImage, qrLocation, true)
     }
 
     private fun drawMetaFields(canvas: PdfCanvas, targetArea: Rectangle, proximaNovaFont: PdfFont, t: EdustorPdfType) {

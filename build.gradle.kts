@@ -32,6 +32,7 @@ dependencies {
 	implementation("com.itextpdf:kernel:7.0.1")
 	implementation("com.itextpdf:io:7.0.1")
 	implementation("com.itextpdf:layout:7.0.1")
+	implementation("com.google.zxing:javase:3.3.0")
 	kapt("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

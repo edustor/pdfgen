@@ -40,8 +40,8 @@ data class EdustorPdfType(
         val bottomFontSize: Float,
         val bottomLabelMargin: Double,
         val markerSide: Double = 0.0,
-        val metaWidth: Int = 4,
-        val metaHeight: Int = 3
+        val metaWidth: Int = 8,
+        val metaHeight: Int = 2
 )
 
 object EdustorPdfTypes {
