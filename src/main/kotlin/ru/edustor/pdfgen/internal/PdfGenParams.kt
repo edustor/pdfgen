@@ -18,13 +18,9 @@ data class PdfGenParams(
         val generateTitle: Boolean = true,
         val markersEnabled: Boolean = false // TODO: Currently not used. Remove on refactoring.
 ) {
-    val academicYear: String = let {
-        val now = LocalDateTime.now(ZoneId.of("Europe/Moscow")).withNano(0)
-        val academicYear = when {
-            now.month > Month.JUNE -> "${now.year}-${now.year + 1}"
-            else -> "${now.year - 1}-${now.year}"
-        }
-        return@let academicYear
+    val copyrightYears: String = let {
+        val now = LocalDateTime.now(ZoneId.of("Europe/Moscow"))
+        return@let "2016-${now.year}"
     }
 }
 
