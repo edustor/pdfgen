@@ -115,7 +115,7 @@ open class PdfGenerator {
 
     private fun drawQR(index: Int, canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
         val pageId = EdustorId.generate(index = index)
-        val url = "https://e.wtrn.ru/p/$pageId"
+        val url = "https://edustor.wtrn.ru/p/$pageId"
         val qr = QrUtils.makeQR(url)
         val qrPdfImage = ImageDataFactory.create(qr.getAsByteArray())
         val qrSide = (2 * t.gridCellSide).toFloat()
