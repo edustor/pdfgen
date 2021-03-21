@@ -84,7 +84,7 @@ open class PdfGenerator {
         val gridArea = drawGrid(canvas, p)
 
         if (p.type == EdustorPdfTypes.PAPER) {
-//            drawMarkers(canvas, gridArea, p.type)
+            drawMarkers(canvas, gridArea, p.type)
             drawQR(index, canvas, gridArea, p.type)
             drawMetaFieldsMarkup(canvas, gridArea, proximaNovaFont, p.type)
         }
@@ -94,21 +94,39 @@ open class PdfGenerator {
     }
 
     private fun drawMarkers(canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
+        val markerModuleSize = t.markerModuleSize
+
+        val startX = targetArea.right.toDouble() - markerModuleSize * 8
+        val startY = targetArea.top.toDouble() + t.gridCellSide * 0.2
+
+        drawMarker(
+                startX = targetArea.right.toDouble() - markerModuleSize * 7,
+                startY = targetArea.top.toDouble() + markerModuleSize * 1,
+                canvas = canvas,
+                markerModuleSize = markerModuleSize
+        )
+
+//        canvas.setFillColor(Color.BLACK)
+//        canvas.rectangle(tRight - t.markerModuleSize, tTop - t.markerModuleSize, t.markerModuleSize, t.markerModuleSize)
+//        canvas.fillStroke()
+    }
+
+    private fun drawMarker(startX: Double, startY: Double, canvas: PdfCanvas, markerModuleSize: Double) {
         canvas.saveState()
+                .setLineWidth(markerModuleSize.toFloat())
+                .setStrokeColor(Color.BLACK)
+                .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
+                .moveTo(startX, startY)
+                .lineTo(startX + markerModuleSize * 7, startY)
+                .lineTo(startX + markerModuleSize * 7, startY + markerModuleSize * 7)
+                .lineTo(startX, startY + markerModuleSize * 7)
+                .lineTo(startX, startY)
+                .stroke()
 
-        val tLeft = targetArea.left.toDouble()
-        val tRight = targetArea.right.toDouble()
-        val tTop = targetArea.top.toDouble()
-        val tBottom = targetArea.bottom.toDouble()
-
-        canvas.setFillColor(Color.BLACK)
-        canvas.rectangle(tLeft, tBottom, t.markerSide, t.markerSide)
-        canvas.rectangle(tRight - t.markerSide, tBottom, t.markerSide, t.markerSide)
-        canvas.rectangle(tLeft, tTop - t.markerSide, t.markerSide, t.markerSide)
-        canvas.rectangle(tRight - t.markerSide, tTop - t.markerSide, t.markerSide, t.markerSide)
-        canvas.fillStroke()
-
-        canvas.restoreState()
+                .setFillColor(Color.BLACK)
+                .rectangle(startX + markerModuleSize * 2, startY + markerModuleSize * 2, markerModuleSize * 3, markerModuleSize * 3)
+                .fillStroke()
+                .restoreState()
     }
 
     private fun drawQR(index: Int, canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
@@ -182,7 +200,7 @@ open class PdfGenerator {
 
         val bottomRightLabelSize = proximaNovaFont.getWidth(p.contactsString, t.bottomFontSize)
         val bottomRightX = when (p.markersEnabled) {
-            true -> targetArea.right - (t.markerSide + 3) - bottomRightLabelSize
+            true -> targetArea.right - (t.markerModuleSize + 3) - bottomRightLabelSize
             false -> targetArea.right.toDouble() - bottomRightLabelSize
         }
         canvas.beginText()

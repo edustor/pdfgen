@@ -2,7 +2,6 @@ package ru.edustor.pdfgen.internal
 
 import com.itextpdf.kernel.geom.PageSize
 import java.time.LocalDateTime
-import java.time.Month
 import java.time.ZoneId
 
 
@@ -35,7 +34,7 @@ data class EdustorPdfType(
         val topFontSize: Float,
         val bottomFontSize: Float,
         val bottomLabelMargin: Double,
-        val markerSide: Double = 0.0,
+        val markerModuleSize: Double = 0.0,
         val metaWidth: Int = 8,
         val metaHeight: Int = 2
 )
@@ -57,7 +56,7 @@ object EdustorPdfTypes {
                 topFontSize = 11f,
                 bottomFontSize = 8f,
                 bottomLabelMargin = 0.0,
-                markerSide = gridCellSide
+                markerModuleSize = gridCellSide * 0.4 / 7
         )
     }
 
