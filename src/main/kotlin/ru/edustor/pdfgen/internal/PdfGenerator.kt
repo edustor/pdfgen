@@ -1,6 +1,7 @@
 package ru.edustor.pdfgen.internal
 
 import com.itextpdf.io.font.PdfEncodings
+import com.itextpdf.io.image.ImageData
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.color.Color
 import com.itextpdf.kernel.font.PdfFont
@@ -30,12 +31,14 @@ open class PdfGenerator {
 //        Looks like it's necessary to create new PdfFont instance for each document
         val proximaNovaFont = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H, true, false)
 
+        val markerImage = ImageDataFactory.create(javaClass.getResource("/images/marker.png"))
+
         if (p.generateTitle) {
             drawTitlePage(pdfDocument, proximaNovaFont, p)
         }
 
         (1..p.pageCount).forEach { index ->
-            drawRegularPage(index, pdfDocument, proximaNovaFont, p)
+            drawRegularPage(index, pdfDocument, proximaNovaFont, markerImage, p)
         }
 
         pdfDocument.close()
@@ -76,6 +79,7 @@ open class PdfGenerator {
     private fun drawRegularPage(index: Int,
                                 pdfDocument: PdfDocument,
                                 proximaNovaFont: PdfFont,
+                                markerImage: ImageData,
                                 p: PdfGenParams) {
 
         val page = pdfDocument.addNewPage(p.type.pageSize)
@@ -84,7 +88,7 @@ open class PdfGenerator {
         val gridArea = drawGrid(canvas, p)
 
         if (p.type == EdustorPdfTypes.PAPER) {
-            drawMarkers(canvas, gridArea, p.type)
+            drawMarkers(canvas, gridArea, markerImage, p.type)
             drawQR(index, canvas, gridArea, p.type)
             drawMetaFieldsMarkup(canvas, gridArea, proximaNovaFont, p.type)
         }
@@ -93,22 +97,11 @@ open class PdfGenerator {
         drawRegularPageLabels(canvas, labelsArea, proximaNovaFont, p)
     }
 
-    private fun drawMarkers(canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
-        val markerModuleSize = t.markerModuleSize
+    private fun drawMarkers(canvas: PdfCanvas, targetArea: Rectangle, markerImage: ImageData, t: EdustorPdfType) {
+        val markerSize = t.markerSize.toFloat()
 
-        val startX = targetArea.right.toDouble() - markerModuleSize * 8
-        val startY = targetArea.top.toDouble() + t.gridCellSide * 0.2
-
-        drawMarker(
-                startX = targetArea.right.toDouble() - markerModuleSize * 7,
-                startY = targetArea.top.toDouble() + markerModuleSize * 1,
-                canvas = canvas,
-                markerModuleSize = markerModuleSize
-        )
-
-//        canvas.setFillColor(Color.BLACK)
-//        canvas.rectangle(tRight - t.markerModuleSize, tTop - t.markerModuleSize, t.markerModuleSize, t.markerModuleSize)
-//        canvas.fillStroke()
+        val position = Rectangle(targetArea.right - markerSize, targetArea.top + markerSize * 0.6f, markerSize, markerSize)
+        canvas.addImage(markerImage, position, false)
     }
 
     private fun drawMarker(startX: Double, startY: Double, canvas: PdfCanvas, markerModuleSize: Double) {
@@ -200,7 +193,7 @@ open class PdfGenerator {
 
         val bottomRightLabelSize = proximaNovaFont.getWidth(p.contactsString, t.bottomFontSize)
         val bottomRightX = when (p.markersEnabled) {
-            true -> targetArea.right - (t.markerModuleSize + 3) - bottomRightLabelSize
+            true -> targetArea.right - (t.markerSize + 3) - bottomRightLabelSize
             false -> targetArea.right.toDouble() - bottomRightLabelSize
         }
         canvas.beginText()

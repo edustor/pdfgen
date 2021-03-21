@@ -34,7 +34,7 @@ data class EdustorPdfType(
         val topFontSize: Float,
         val bottomFontSize: Float,
         val bottomLabelMargin: Double,
-        val markerModuleSize: Double = 0.0,
+        val markerSize: Double = 0.0,
         val metaWidth: Int = 8,
         val metaHeight: Int = 2
 )
@@ -56,7 +56,7 @@ object EdustorPdfTypes {
                 topFontSize = 11f,
                 bottomFontSize = 8f,
                 bottomLabelMargin = 0.0,
-                markerModuleSize = gridCellSide * 0.4 / 7
+                markerSize = gridCellSide * 0.4
         )
     }
 
