@@ -100,7 +100,7 @@ open class PdfGenerator {
     private fun drawMarkers(canvas: PdfCanvas, targetArea: Rectangle, markerImage: ImageData, t: EdustorPdfType) {
         val markerSize = t.markerSize.toFloat()
 
-        val position = Rectangle(targetArea.right - markerSize, targetArea.top + markerSize * 0.6f, markerSize, markerSize)
+        val position = Rectangle(targetArea.right - markerSize, targetArea.top + (t.gridCellSide.toFloat() * 0.25f), markerSize, markerSize)
         canvas.addImage(markerImage, position, false)
     }
 
