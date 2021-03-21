@@ -104,24 +104,6 @@ open class PdfGenerator {
         canvas.addImage(markerImage, position, false)
     }
 
-    private fun drawMarker(startX: Double, startY: Double, canvas: PdfCanvas, markerModuleSize: Double) {
-        canvas.saveState()
-                .setLineWidth(markerModuleSize.toFloat())
-                .setStrokeColor(Color.BLACK)
-                .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
-                .moveTo(startX, startY)
-                .lineTo(startX + markerModuleSize * 7, startY)
-                .lineTo(startX + markerModuleSize * 7, startY + markerModuleSize * 7)
-                .lineTo(startX, startY + markerModuleSize * 7)
-                .lineTo(startX, startY)
-                .stroke()
-
-                .setFillColor(Color.BLACK)
-                .rectangle(startX + markerModuleSize * 2, startY + markerModuleSize * 2, markerModuleSize * 3, markerModuleSize * 3)
-                .fillStroke()
-                .restoreState()
-    }
-
     private fun drawQR(index: Int, canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
         val pageId = EdustorId.generate(index = index)
         val url = "https://edustor.wtrn.ru/p/$pageId"
