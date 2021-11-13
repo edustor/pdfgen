@@ -20,7 +20,7 @@
     </div>
     <div>
         <label for="copyright">Copyright</label>
-        <input name="copyright" type="text" size="70" value="Dmitry Romanov">
+        <input name="copyright" type="text" size="70" value="Edustor Project">
     </div>
     <div>
         <label for="contacts">Contacts</label>

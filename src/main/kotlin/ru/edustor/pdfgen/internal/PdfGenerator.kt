@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component
 import ru.edustor.pdfgen.utils.QrUtils
 import ru.edustor.pdfgen.utils.QrUtils.getAsByteArray
 import java.io.OutputStream
+import java.lang.IllegalStateException
 
 @Component
 open class PdfGenerator {
@@ -54,7 +55,11 @@ open class PdfGenerator {
                 .setStrokeColor(Color.GRAY)
                 .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
-        val edustorStr = "Edustor Digital"
+        val edustorStr = when(p.type) {
+            EdustorPdfTypes.DIGITAL -> "Edustor Digital"
+            EdustorPdfTypes.PAPER -> "Edustor Paper"
+            else -> throw IllegalStateException("Unsupported EdustorPdfType")
+        }
         showText(canvas, calculateCenteredTextX(t.pageSize.width, edustorStr, proximaNovaFont, 18f),
                 t.pageSize.top - 50.0, edustorStr, proximaNovaFont, 18f)
 
@@ -71,9 +76,9 @@ open class PdfGenerator {
         showText(canvas, calculateCenteredTextX(t.pageSize.width, p.contactsString, proximaNovaFont, 10f),
                 t.pageSize.bottom + 80.0, p.contactsString, proximaNovaFont, 10f)
 
-        val finalCopyrightString = "© ${p.copyrightString}, ${p.copyrightYears}"
-        showText(canvas, calculateCenteredTextX(t.pageSize.width, finalCopyrightString, proximaNovaFont, 10f),
-                t.pageSize.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
+//        val finalCopyrightString = "© ${p.copyrightString}, ${p.copyrightYears}"
+//        showText(canvas, calculateCenteredTextX(t.pageSize.width, finalCopyrightString, proximaNovaFont, 10f),
+//                t.pageSize.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
     }
 
     private fun drawRegularPage(index: Int,
