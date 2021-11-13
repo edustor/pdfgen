@@ -92,7 +92,7 @@ open class PdfGenerator {
 
         val gridArea = drawGrid(canvas, p)
 
-        if (p.type == EdustorPdfTypes.PAPER) {
+        if (p.markersEnabled) {
             drawMarkers(canvas, gridArea, markerImage, p.type)
             drawQR(index, canvas, gridArea, p.type)
             drawMetaFieldsMarkup(canvas, gridArea, proximaNovaFont, p.type)
@@ -162,7 +162,10 @@ open class PdfGenerator {
         }
 
         val topRightLabelSize = proximaNovaFont.getWidth(topRightString, t.topFontSize)
-        val topRightX = targetArea.right.toDouble() - topRightLabelSize
+        val topRightX = when (p.markersEnabled) {
+            true -> targetArea.right - (t.markerSize + 3) - topRightLabelSize
+            false -> targetArea.right.toDouble() - topRightLabelSize
+        }
 
         canvas.beginText()
                 .moveText(topRightX, topRowY)
@@ -179,10 +182,7 @@ open class PdfGenerator {
                 .endText()
 
         val bottomRightLabelSize = proximaNovaFont.getWidth(p.contactsString, t.bottomFontSize)
-        val bottomRightX = when (p.markersEnabled) {
-            true -> targetArea.right - (t.markerSize + 3) - bottomRightLabelSize
-            false -> targetArea.right.toDouble() - bottomRightLabelSize
-        }
+        val bottomRightX = targetArea.right.toDouble() - bottomRightLabelSize
         canvas.beginText()
                 .moveText(bottomRightX, bottomRowY)
                 .showText(p.contactsString)
