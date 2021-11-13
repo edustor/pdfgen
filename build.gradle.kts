@@ -47,3 +47,9 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.getByName<Jar>("jar") {
+	// Disable plain jar
+	// See https://stackoverflow.com/questions/67663728/spring-boot-2-5-0-generates-plain-jar-file-can-i-remove-it
+	enabled = false
+}

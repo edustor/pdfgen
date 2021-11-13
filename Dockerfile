@@ -9,7 +9,7 @@
 #COPY . .
 #RUN ./gradlew clean assemble --console=plain --info
 
-FROM eclipse-temurin:17-alpine
+FROM eclipse-temurin:17
 WORKDIR /app
 #COPY --from=0 /app/build/libs/*.jar app.jar
 COPY build/libs/*.jar app.jar
