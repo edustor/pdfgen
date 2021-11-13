@@ -90,9 +90,9 @@ open class PdfGenerator {
             t.pageSize.bottom + 80.0, p.contactsString, proximaNovaFont, 10f
         )
 
-//        val finalCopyrightString = "© ${p.copyrightString}, ${p.copyrightYears}"
-//        showText(canvas, calculateCenteredTextX(t.pageSize.width, finalCopyrightString, proximaNovaFont, 10f),
-//                t.pageSize.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
+        val finalCopyrightString = "© ${p.copyrightString}, ${p.copyrightYears}"
+        showText(canvas, calculateCenteredTextX(t.pageSize.width, finalCopyrightString, proximaNovaFont, 10f),
+                t.pageSize.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
     }
 
     private fun drawRegularPage(
