@@ -148,7 +148,7 @@ open class PdfGenerator {
             p.authorName != "" -> "${t.title}: ${p.authorName}"
             else -> t.title
         }
-        val topRowY = targetArea.top.toDouble()
+        val topRowY = targetArea.top.toDouble() - 3f
         val leftX = targetArea.left.toDouble()
         canvas.beginText()
                 .setFontAndSize(proximaNovaFont, t.topFontSize)
