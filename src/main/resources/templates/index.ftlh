@@ -34,10 +34,10 @@
         <label for="generateTitle">Generate title page</label>
         <input name="generateTitle" type="checkbox" checked="checked">
     </div>
-<#--    <div>-->
-<#--        <label for="cornell">Draw markers</label>-->
-<#--        <input name="markers" type="checkbox">-->
-<#--    </div>-->
+    <div>
+        <label for="cornell">Digital</label>
+        <input name="digital" type="checkbox">
+    </div>
     <div>
         <label for="cornell">Use Cornell markup</label>
         <input name="cornell" type="checkbox">

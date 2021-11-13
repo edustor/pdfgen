@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
+import ru.edustor.pdfgen.internal.EdustorPdfType
 import ru.edustor.pdfgen.internal.EdustorPdfTypes
 import ru.edustor.pdfgen.internal.PdfGenParams
 import ru.edustor.pdfgen.internal.PdfGenerator
@@ -22,33 +23,41 @@ class RootController(private val pdfGenerator: PdfGenerator) {
 
     @GetMapping("/pdf")
     @ResponseBody
-    fun pdf(@RequestParam author: String,
-            @RequestParam subject: String,
-            @RequestParam course: String,
-            @RequestParam copyright: String,
-            @RequestParam contacts: String,
-            @RequestParam pagesCount: Int,
-            @RequestParam(defaultValue = "false") cornell: Boolean,
-            @RequestParam(defaultValue = "false") markers: Boolean,
-            @RequestParam(defaultValue = "false") generateTitle: Boolean): HttpEntity<ByteArray> {
-        val (filename, type, contentDispositionEnabled) = when {
-            subject != "" -> Triple("$subject.pdf", EdustorPdfTypes.DIGITAL, true)
-            else -> Triple("edustor-paper.pdf", EdustorPdfTypes.PAPER, false)
+    fun pdf(
+        @RequestParam author: String,
+        @RequestParam subject: String,
+        @RequestParam course: String,
+        @RequestParam copyright: String,
+        @RequestParam contacts: String,
+        @RequestParam pagesCount: Int,
+        @RequestParam(defaultValue = "false") cornell: Boolean,
+        @RequestParam(defaultValue = "false") digital: Boolean,
+        @RequestParam(defaultValue = "false") generateTitle: Boolean
+    ): HttpEntity<ByteArray> {
+
+        val type = when (digital) {
+            false -> EdustorPdfTypes.PAPER
+            true -> EdustorPdfTypes.DIGITAL
+        }
+
+        val (filename, contentDispositionEnabled) = when (type) {
+            EdustorPdfTypes.DIGITAL -> Pair("$subject.pdf", true)
+            else -> Pair("edustor-paper.pdf", false)
         }
 
         val byteArrayOutputStream = ByteArrayOutputStream()
 
         val params = PdfGenParams(
-                type = type,
-                pageCount = pagesCount,
-                authorName = author,
-                subjectName = subject,
-                courseName = course,
-                copyrightString = copyright,
-                contactsString = contacts,
-                drawCornell = cornell,
-                generateTitle = generateTitle && subject != "",
-                markersEnabled = markers
+            type = type,
+            pageCount = pagesCount,
+            authorName = author,
+            subjectName = subject,
+            courseName = course,
+            copyrightString = copyright,
+            contactsString = contacts,
+            drawCornell = cornell,
+            generateTitle = generateTitle && subject != "",
+            markersEnabled = type == EdustorPdfTypes.PAPER
         )
         pdfGenerator.makePdf(byteArrayOutputStream, filename, params)
 

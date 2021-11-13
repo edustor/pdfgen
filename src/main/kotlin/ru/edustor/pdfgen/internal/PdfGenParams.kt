@@ -15,7 +15,7 @@ data class PdfGenParams(
         val contactsString: String,
         val drawCornell: Boolean = true,
         val generateTitle: Boolean = true,
-        val markersEnabled: Boolean = false // TODO: Currently not used. Remove on refactoring.
+        val markersEnabled: Boolean = false
 ) {
     val copyrightYears: String = let {
         val now = LocalDateTime.now(ZoneId.of("Europe/Moscow"))
