@@ -9,7 +9,7 @@
 #COPY . .
 #RUN ./gradlew clean assemble --console=plain --info
 
-FROM adoptopenjdk:15-jdk
+FROM eclipse-temurin:17-alpine
 WORKDIR /app
 #COPY --from=0 /app/build/libs/*.jar app.jar
 COPY build/libs/*.jar app.jar
