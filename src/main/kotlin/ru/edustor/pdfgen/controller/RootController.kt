@@ -26,6 +26,7 @@ class RootController(private val pdfGenerator: PdfGenerator) {
     fun pdf(
         @RequestParam author: String,
         @RequestParam subject: String,
+        @RequestParam subjectCode: String,
         @RequestParam course: String,
         @RequestParam copyright: String,
         @RequestParam contacts: String,
@@ -52,6 +53,7 @@ class RootController(private val pdfGenerator: PdfGenerator) {
             pageCount = pagesCount,
             authorName = author,
             subjectName = subject,
+            subjectCode = subjectCode,
             courseName = course,
             copyrightString = copyright,
             contactsString = contacts,

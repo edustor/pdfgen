@@ -9,6 +9,10 @@
         <label for="subject">Subject</label>
         <input name="subject" type="text" size="70">
     </div>
+    <div>
+        <label for="subject">Subject Code</label>
+        <input name="subjectCode" type="text" size="5">
+    </div>
     <br>
     <div>
         <label for="author">Author</label>

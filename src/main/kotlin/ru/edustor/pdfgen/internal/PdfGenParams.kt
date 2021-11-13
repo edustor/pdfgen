@@ -10,6 +10,7 @@ data class PdfGenParams(
         val pageCount: Int,
         val authorName: String,
         val subjectName: String,
+        val subjectCode: String,
         val courseName: String,
         val copyrightString: String,
         val contactsString: String,
