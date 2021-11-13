@@ -162,7 +162,12 @@ open class PdfGenerator {
             .stroke()
             .restoreState()
 
-        drawMetaFieldChar(0, 0, "P", canvas, targetArea, proximaNovaFont, p)
+        p.subjectCode.forEachIndexed() { i, char ->
+            drawMetaFieldChar(0, i, char.toString(), canvas, targetArea, proximaNovaFont, p)
+        }
+        listOf(2, 5).forEach { i ->
+            drawMetaFieldChar(1, i, ".", canvas, targetArea, proximaNovaFont, p)
+        }
     }
 
     private fun drawMetaFieldChar(
@@ -180,7 +185,7 @@ open class PdfGenerator {
         val charWidth = font.getWidth(char, fontSize)
 
         val x = targetArea.right - (t.metaWidth - column - 0.5) * t.gridCellSide - (charWidth / 2.0)
-        val y = targetArea.top - (row + 0.75) * t.gridCellSide
+        val y = targetArea.top - (row + 0.8) * t.gridCellSide
 
         showText(canvas, x, y, char, font, fontSize)
     }

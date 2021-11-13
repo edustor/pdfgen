@@ -16,7 +16,7 @@
     <br>
     <div>
         <label for="author">Author</label>
-        <input name="author" type="text" size="70">
+        <input name="author" type="text" size="70" value="Dmitry Romanov">
     </div>
     <div>
         <label for="course">Course</label>
@@ -36,7 +36,7 @@
     </div>
     <div>
         <label for="generateTitle">Generate title page</label>
-        <input name="generateTitle" type="checkbox" checked="checked">
+        <input name="generateTitle" type="checkbox">
     </div>
     <div>
         <label for="cornell">Digital</label>
