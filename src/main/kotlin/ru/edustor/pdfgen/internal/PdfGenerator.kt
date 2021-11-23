@@ -108,14 +108,16 @@ open class PdfGenerator {
 
         val gridArea = drawGrid(canvas, p)
 
+        var pageId: EdustorId? = null
         if (p.markersEnabled) {
+            pageId = EdustorId.generate()
             drawMarkers(canvas, gridArea, markerImage, p.type)
-            drawQR(index, canvas, gridArea, p.type)
+            drawQR(pageId, canvas, gridArea, p.type)
             drawMetaFieldsMarkup(canvas, gridArea, proximaNovaFont, p)
         }
 
         val labelsArea = Rectangle(gridArea.x, gridArea.y - 9, gridArea.width, gridArea.height + 15)
-        drawRegularPageLabels(canvas, labelsArea, proximaNovaFont, p)
+        drawRegularPageLabels(canvas, labelsArea, proximaNovaFont, p, pageId)
     }
 
     private fun drawMarkers(canvas: PdfCanvas, targetArea: Rectangle, markerImage: ImageData, t: EdustorPdfType) {
@@ -130,8 +132,7 @@ open class PdfGenerator {
         canvas.addImage(markerImage, position, false)
     }
 
-    private fun drawQR(index: Int, canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
-        val pageId = EdustorId.generate()
+    private fun drawQR(pageId: EdustorId, canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
         val url = "https://edustor.wtrn.ru/p/$pageId"
         val qr = QrUtils.makeQR(url)
         val qrPdfImage = ImageDataFactory.create(qr.getAsByteArray())
@@ -195,7 +196,8 @@ open class PdfGenerator {
         canvas: PdfCanvas,
         targetArea: Rectangle,
         proximaNovaFont: PdfFont,
-        p: PdfGenParams
+        p: PdfGenParams,
+        pageId: EdustorId?
     ) {
 //            Print top row
 
@@ -232,9 +234,15 @@ open class PdfGenerator {
 
 //            Print bottom row
         val bottomRowY = targetArea.bottom - t.bottomLabelMargin
+
+        var bottomLeftText = "© ${p.copyrightString}, ${p.copyrightYears}"
+        pageId?.let {
+            bottomLeftText += ". Page ID: $pageId."
+        }
+
         canvas.beginText()
             .moveText(leftX, bottomRowY)
-            .showText("© ${p.copyrightString}, ${p.copyrightYears}")
+            .showText(bottomLeftText)
             .endText()
 
         val bottomRightLabelSize = proximaNovaFont.getWidth(p.contactsString, t.bottomFontSize)
