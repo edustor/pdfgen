@@ -9,8 +9,8 @@
 #COPY . .
 #RUN ./gradlew clean assemble --console=plain --info
 
-FROM eclipse-temurin:17
+FROM bellsoft/liberica-openjdk-alpine:21
 WORKDIR /app
 #COPY --from=0 /app/build/libs/*.jar app.jar
 COPY build/libs/*.jar app.jar
-CMD java -Xms64m -Xmx512m -jar app.jar
+CMD java -Xms64m -Xmx128m -jar app.jar
