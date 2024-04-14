@@ -1,11 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.6.1"
-	id("io.spring.dependency-management") version "1.0.11.RELEASE"
-	kotlin("jvm") version "1.6.0"
-	kotlin("kapt") version "1.6.0"
-	kotlin("plugin.spring") version "1.6.0"
+	id("org.springframework.boot") version "3.2.4"
+	id("io.spring.dependency-management") version "1.1.4"
+	kotlin("jvm") version "1.9.23"
+	kotlin("plugin.spring") version "1.9.23"
 }
 
 group = "ru.wtrn.edustor"
@@ -33,7 +32,7 @@ dependencies {
 	implementation("com.itextpdf:io:7.0.1")
 	implementation("com.itextpdf:layout:7.0.1")
 	implementation("com.google.zxing:javase:3.3.0")
-	kapt("org.springframework.boot:spring-boot-configuration-processor")
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
