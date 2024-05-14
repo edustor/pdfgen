@@ -238,14 +238,16 @@ open class PdfGenerator {
 //            Print bottom row
         val bottomRowY = targetArea.bottom - t.bottomLabelMargin
 
-        val bottomLeftText = "Author: ${p.authorName}, ${p.contactsString}"
-        canvas.beginText()
-            .moveText(leftX, bottomRowY)
-            .showText(bottomLeftText)
-            .endText()
+        if (p.authorName.isNotBlank()) {
+            val bottomLeftText = "Author: ${p.authorName}, ${p.contactsString}"
+            canvas.beginText()
+                .moveText(leftX, bottomRowY)
+                .showText(bottomLeftText)
+                .endText()
+        }
 
         if (pageId != null) {
-            val bottomRightText = "Page generated on ${p.currentDate}, ID: ${pageId.humanReadableId}"
+            val bottomRightText = "${p.currentDate} ${pageId.humanReadableId}"
 
             val bottomRightLabelSize = proximaNovaFont.getWidth(bottomRightText, t.bottomFontSize)
             val bottomRightX = targetArea.right.toDouble() - bottomRightLabelSize
