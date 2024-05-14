@@ -3,7 +3,7 @@ package ru.edustor.pdfgen.internal
 import com.itextpdf.io.font.PdfEncodings
 import com.itextpdf.io.image.ImageData
 import com.itextpdf.io.image.ImageDataFactory
-import com.itextpdf.kernel.color.Color
+import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.geom.Rectangle
@@ -32,7 +32,7 @@ open class PdfGenerator {
         pdfDocument.documentInfo.title = filename
 
 //        Looks like it's necessary to create new PdfFont instance for each document
-        val proximaNovaFont = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H, true, false)
+        val proximaNovaFont = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED, true)
 
         val markerImage = ImageDataFactory.create(javaClass.getResource("/images/marker.png"))
 
@@ -56,7 +56,7 @@ open class PdfGenerator {
         val page = pdfDocument.addNewPage(t.pageSize)
         val canvas = PdfCanvas(page)
             .setLineWidth(0.1f)
-            .setStrokeColor(Color.GRAY)
+            .setStrokeColor(ColorConstants.GRAY)
             .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
         val edustorStr = when (p.type) {
@@ -136,7 +136,7 @@ open class PdfGenerator {
             markerSize,
             markerSize
         )
-        canvas.addImage(markerImage, position, false)
+        canvas.addImageFittedIntoRectangle(markerImage, position, false)
     }
 
     private fun drawQR(pageId: EdustorId, canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
@@ -145,7 +145,7 @@ open class PdfGenerator {
         val qrPdfImage = ImageDataFactory.create(qr.getAsByteArray())
         val qrSide = (2 * t.gridCellSide).toFloat()
         val qrLocation = Rectangle(targetArea.right - qrSide, targetArea.y, qrSide, qrSide)
-        canvas.addImage(qrPdfImage, qrLocation, true)
+        canvas.addImageFittedIntoRectangle(qrPdfImage, qrLocation, true)
     }
 
     private fun drawMetaFieldsMarkup(
@@ -160,7 +160,7 @@ open class PdfGenerator {
 
         canvas.saveState()
             .setLineWidth(0.2f)
-            .setStrokeColor(Color.BLACK)
+            .setStrokeColor(ColorConstants.BLACK)
             .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
             .moveTo(targetArea.right - width, targetArea.top.toDouble())
             .lineTo(targetArea.right - width, targetArea.top - height)
@@ -266,7 +266,7 @@ open class PdfGenerator {
         canvas
             .saveState()
             .setLineWidth(0.1f)
-            .setStrokeColor(Color.GRAY)
+            .setStrokeColor(ColorConstants.GRAY)
             .setLineJoinStyle(PdfCanvasConstants.LineJoinStyle.MITER)
 
         val t = p.type

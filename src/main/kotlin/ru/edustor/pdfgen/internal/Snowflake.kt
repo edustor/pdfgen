@@ -47,8 +47,8 @@ class Snowflake {
 
     @Synchronized
     fun nextId(): Long {
-        var currentTimestamp: Long;
-        var randomPart: Int;
+        var currentTimestamp: Long
+        var randomPart: Int
         while (true) {
             currentTimestamp = timestamp()
             check(currentTimestamp >= lastTimestamp) { "Invalid System Clock!" }
