@@ -8,15 +8,16 @@ class EdustorId(
         private val snowflake = Snowflake()
 
         fun new(batchId: String, pageIndex: Int): EdustorId {
+            val pageIndexStr = pageIndex.toString().padStart(2, '0')
             val stringBuilder = StringBuilder()
             for (i in 0..batchId.lastIndex step 4) {
                 val substring = batchId.substring(i, i + 4)
                 stringBuilder.append(substring).append(" ")
             }
-            stringBuilder.append(pageIndex)
+            stringBuilder.append(pageIndexStr)
             return EdustorId(
                 humanReadableId = stringBuilder.toString(),
-                compactId = batchId + pageIndex
+                compactId = batchId + pageIndexStr
             )
         }
 
