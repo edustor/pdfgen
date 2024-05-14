@@ -7,7 +7,8 @@ import java.nio.charset.Charset;
 public class HeaderFieldParamEncoder {
     /**
      * Encode the given header field param as describe in RFC 5987.
-     * @param input the header field param
+     *
+     * @param input   the header field param
      * @param charset the charset of the header field param string
      * @return the encoded header field param
      * @see <a href="https://tools.ietf.org/html/rfc5987">RFC 5987</a>
@@ -28,8 +29,7 @@ public class HeaderFieldParamEncoder {
         for (byte b : source) {
             if (isRFC5987AttrChar(b)) {
                 sb.append((char) b);
-            }
-            else {
+            } else {
                 sb.append('%');
                 char hex1 = Character.toUpperCase(Character.forDigit((b >> 4) & 0xF, 16));
                 char hex2 = Character.toUpperCase(Character.forDigit(b & 0xF, 16));

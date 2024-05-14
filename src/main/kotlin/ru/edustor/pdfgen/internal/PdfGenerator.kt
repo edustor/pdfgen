@@ -96,8 +96,10 @@ open class PdfGenerator {
 
         finalStringBuilder.append("Date: ${p.currentDate}")
         val finalString = finalStringBuilder.toString()
-        showText(canvas, calculateCenteredTextX(t.pageSize.width, finalString, proximaNovaFont, 10f),
-                t.pageSize.bottom + 20.0, finalString, proximaNovaFont, 10f)
+        showText(
+            canvas, calculateCenteredTextX(t.pageSize.width, finalString, proximaNovaFont, 10f),
+            t.pageSize.bottom + 20.0, finalString, proximaNovaFont, 10f
+        )
     }
 
     private fun drawRegularPage(

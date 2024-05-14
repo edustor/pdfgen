@@ -60,7 +60,11 @@ class Snowflake {
 
             randomPart = ThreadLocalRandom.current().nextInt(maxRandom)
             if (!usedRandomIds.add(randomPart)) {
-                logger.warn("Random part collision occurred, retrying. timestamp={}, usedRandomIds.size={}", currentTimestamp, usedRandomIds.size)
+                logger.warn(
+                    "Random part collision occurred, retrying. timestamp={}, usedRandomIds.size={}",
+                    currentTimestamp,
+                    usedRandomIds.size
+                )
                 continue
             }
             break
