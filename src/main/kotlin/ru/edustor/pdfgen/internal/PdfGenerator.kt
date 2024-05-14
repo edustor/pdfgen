@@ -69,15 +69,14 @@ open class PdfGenerator {
             t.pageSize.top - 50.0, edustorStr, proximaNovaFont, 18f
         )
 
-
         showText(
-            canvas, calculateCenteredTextX(t.pageSize.width, p.courseName, proximaNovaFont, 20f),
-            t.pageSize.top - 365.0, p.courseName, proximaNovaFont, 20f
+            canvas, calculateCenteredTextX(t.pageSize.width, p.subjectName, proximaNovaFont, 30f),
+            t.pageSize.top - 365.0, p.subjectName, proximaNovaFont, 30f
         )
 
         showText(
-            canvas, calculateCenteredTextX(t.pageSize.width, p.subjectName, proximaNovaFont, 30f),
-            t.pageSize.top - 400.0, p.subjectName, proximaNovaFont, 30f
+            canvas, calculateCenteredTextX(t.pageSize.width, p.courseName, proximaNovaFont, 20f),
+            t.pageSize.top - 400.0, p.courseName, proximaNovaFont, 20f
         )
 
         showText(
@@ -90,9 +89,15 @@ open class PdfGenerator {
             t.pageSize.bottom + 80.0, p.contactsString, proximaNovaFont, 10f
         )
 
-        val finalCopyrightString = "© ${p.copyrightString}, ${p.copyrightYears}"
-        showText(canvas, calculateCenteredTextX(t.pageSize.width, finalCopyrightString, proximaNovaFont, 10f),
-                t.pageSize.bottom + 20.0, finalCopyrightString, proximaNovaFont, 10f)
+        val finalStringBuilder = StringBuilder()
+        if (p.subjectCode.isNotBlank()) {
+            finalStringBuilder.append("Subject code: ${p.subjectCode} ")
+        }
+
+        finalStringBuilder.append("Date: ${p.currentDate}")
+        val finalString = finalStringBuilder.toString()
+        showText(canvas, calculateCenteredTextX(t.pageSize.width, finalString, proximaNovaFont, 10f),
+                t.pageSize.bottom + 20.0, finalString, proximaNovaFont, 10f)
     }
 
     private fun drawRegularPage(
@@ -110,7 +115,7 @@ open class PdfGenerator {
 
         var pageId: EdustorId? = null
         if (p.markersEnabled) {
-            pageId = EdustorId.generate()
+            pageId = EdustorId.new(p.batchId, index)
             drawMarkers(canvas, gridArea, markerImage, p.type)
             drawQR(pageId, canvas, gridArea, p.type)
             drawMetaFieldsMarkup(canvas, gridArea, proximaNovaFont, p)
@@ -133,7 +138,7 @@ open class PdfGenerator {
     }
 
     private fun drawQR(pageId: EdustorId, canvas: PdfCanvas, targetArea: Rectangle, t: EdustorPdfType) {
-        val url = "https://edustor.wtrn.ru/p/$pageId"
+        val url = "https://edustor.wtrn.ru/p/${pageId.compactId}"
         val qr = QrUtils.makeQR(url)
         val qrPdfImage = ImageDataFactory.create(qr.getAsByteArray())
         val qrSide = (2 * t.gridCellSide).toFloat()
@@ -202,16 +207,12 @@ open class PdfGenerator {
 //            Print top row
 
         val t = p.type
-        val titleRow = when {
-            p.authorName != "" -> "${t.title}: ${p.authorName}"
-            else -> t.title
-        }
         val topRowY = targetArea.top.toDouble() - 3f
         val leftX = targetArea.left.toDouble()
         canvas.beginText()
             .setFontAndSize(proximaNovaFont, t.topFontSize)
             .moveText(leftX, topRowY)
-            .showText(titleRow)
+            .showText(t.title)
             .endText()
 
         val topRightString = when {
@@ -235,22 +236,22 @@ open class PdfGenerator {
 //            Print bottom row
         val bottomRowY = targetArea.bottom - t.bottomLabelMargin
 
-        var bottomLeftText = "© ${p.copyrightString}, ${p.copyrightYears}"
-        pageId?.let {
-            bottomLeftText += ". Page ID: $pageId."
-        }
-
+        val bottomLeftText = "Author: ${p.authorName}, ${p.contactsString}"
         canvas.beginText()
             .moveText(leftX, bottomRowY)
             .showText(bottomLeftText)
             .endText()
 
-        val bottomRightLabelSize = proximaNovaFont.getWidth(p.contactsString, t.bottomFontSize)
-        val bottomRightX = targetArea.right.toDouble() - bottomRightLabelSize
-        canvas.beginText()
-            .moveText(bottomRightX, bottomRowY)
-            .showText(p.contactsString)
-            .endText()
+        if (pageId != null) {
+            val bottomRightText = "Page generated on ${p.currentDate}, ID: ${pageId.humanReadableId}"
+
+            val bottomRightLabelSize = proximaNovaFont.getWidth(bottomRightText, t.bottomFontSize)
+            val bottomRightX = targetArea.right.toDouble() - bottomRightLabelSize
+            canvas.beginText()
+                .moveText(bottomRightX, bottomRowY)
+                .showText(bottomRightText)
+                .endText()
+        }
     }
 
     /**

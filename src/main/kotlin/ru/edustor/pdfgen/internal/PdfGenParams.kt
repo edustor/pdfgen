@@ -3,6 +3,8 @@ package ru.edustor.pdfgen.internal
 import com.itextpdf.kernel.geom.PageSize
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
 data class PdfGenParams(
@@ -12,15 +14,15 @@ data class PdfGenParams(
         val subjectName: String,
         val subjectCode: String,
         val courseName: String,
-        val copyrightString: String,
         val contactsString: String,
         val drawCornell: Boolean = true,
         val generateTitle: Boolean = true,
-        val markersEnabled: Boolean = false
+        val markersEnabled: Boolean = false,
+        val batchId: String = EdustorId.generateBatchId()
 ) {
-    val copyrightYears: String = let {
-        val now = LocalDateTime.now(ZoneId.of("Europe/Moscow"))
-        return@let "2016-${now.year}"
+    val currentDate: String = let {
+        val now = ZonedDateTime.now(ZoneId.of("Europe/Moscow"))
+        now.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
     }
 }
 
@@ -56,7 +58,7 @@ object EdustorPdfTypes {
                 gridYCells = 56,
                 topFontSize = 11f,
                 bottomFontSize = 8f,
-                bottomLabelMargin = 0.0,
+                bottomLabelMargin = -2.0,
                 markerSize = gridCellSide * 0.4
         )
     }
@@ -76,7 +78,7 @@ object EdustorPdfTypes {
                 gridYCells = 56,
                 topFontSize = 11f,
                 bottomFontSize = 8f,
-                bottomLabelMargin = 0.0
+                bottomLabelMargin = -2.0
         )
     }
 }

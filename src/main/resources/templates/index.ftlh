@@ -23,12 +23,8 @@
         <input name="course" type="text" size="70">
     </div>
     <div>
-        <label for="copyright">Copyright</label>
-        <input name="copyright" type="text" size="70" value="Edustor Project">
-    </div>
-    <div>
         <label for="contacts">Contacts</label>
-        <input name="contacts" type="text" size="70" value="@wutiarn | wtrn.ru">
+        <input name="contacts" type="text" size="70" value="me@wtrn.ru">
     </div>
     <div>
         <label for="pagesCount">Regular pages count</label>
